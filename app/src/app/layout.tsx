@@ -6,6 +6,7 @@ import { AuthProvider } from "@/providers/AuthProvider";
 import { LoadingProvider } from "@/providers/LoadingProvider";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import MuiAlertProvider from "@/providers/MuiAlert";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,20 +33,22 @@ export default function RootLayout({
       <MUIThemeProvider>
         <LoadingProvider>
           <AuthProvider>
-            <body className={`${geistSans.variable} ${geistMono.variable}`}>
-              {children}
-              <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop
-                closeOnClick
-                rtl
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-              />
-            </body>
+            <MuiAlertProvider>
+              <body className={`${geistSans.variable} ${geistMono.variable}`}>
+                {children}
+                <ToastContainer
+                  position="top-right"
+                  autoClose={3000}
+                  hideProgressBar={false}
+                  newestOnTop
+                  closeOnClick
+                  rtl
+                  pauseOnFocusLoss
+                  draggable
+                  pauseOnHover
+                />
+              </body>{" "}
+            </MuiAlertProvider>
           </AuthProvider>
         </LoadingProvider>
       </MUIThemeProvider>

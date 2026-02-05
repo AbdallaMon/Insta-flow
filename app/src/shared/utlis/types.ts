@@ -78,3 +78,5 @@ export interface GeneralInput {
   };
   pattern?: GeneralPattern;
 }
+
+export type methodType = "post" | "put" | "patch" | "delete" | "get";

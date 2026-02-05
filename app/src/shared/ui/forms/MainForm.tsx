@@ -1,6 +1,9 @@
-import { GeneralInput } from "@/shared/utlis/types";
+import { useLoading } from "@/providers/LoadingProvider";
+import { submitData } from "@/shared/lib/fetchers/submit";
+import { GeneralInput, methodType, RowType } from "@/shared/utlis/types";
 import {
   Box,
+  Button,
   FormControl,
   FormLabel,
   InputLabel,
@@ -16,26 +19,47 @@ import {
   UseFormRegister,
   FieldValues,
 } from "react-hook-form";
-
+type FormType = {
+  inputs: GeneralInput[];
+  onSubmitData: (data: FieldValues) => void;
+  href: string;
+  method?: methodType;
+  submitButtonLabel?: string;
+  initialValues?: Partial<RowType> | null;
+};
 export default function MainForm({
   inputs,
   onSubmitData,
-}: {
-  inputs: GeneralInput[];
-  onSubmitData: (data: FieldValues) => void;
-}) {
+  href,
+  method,
+  submitButtonLabel = "ارسال",
+  initialValues,
+}: FormType) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
-
+  } = useForm({
+    defaultValues: initialValues ?? {},
+  });
+  const { loading, setLoading } = useLoading();
+  async function onSubmit(data: FieldValues) {
+    const req = await submitData({
+      data,
+      setLoading,
+      path: href,
+      method: method || "post",
+      toastMessage: "جاري تحديث البيانات",
+    });
+    if (req && onSubmitData) {
+      onSubmitData(data);
+    }
+  }
   return (
     <Box>
-      <form onSubmit={handleSubmit(onSubmitData)}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         {inputs.map((item) => {
           const input = item.input;
-
           return (
             <Box key={input.id}>
               <RenderInput
@@ -52,6 +76,9 @@ export default function MainForm({
             </Box>
           );
         })}
+        <Button type="submit" disabled={!!errors || loading}>
+          {submitButtonLabel}
+        </Button>
       </form>
     </Box>
   );
