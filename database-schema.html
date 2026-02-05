@@ -1,0 +1,2875 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InstaFlow - Database Schema Documentation</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e4e4e4;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      header {
+        text-align: center;
+        padding: 40px 0;
+        border-bottom: 2px solid #0f3460;
+        margin-bottom: 40px;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        color: #00d9ff;
+        margin-bottom: 10px;
+      }
+
+      header p {
+        color: #888;
+        font-size: 1.1rem;
+      }
+
+      .section {
+        background: #1f2937;
+        border-radius: 16px;
+        padding: 30px;
+        margin-bottom: 30px;
+        border: 1px solid #374151;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .section-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #374151;
+      }
+
+      .section-header .icon {
+        font-size: 2rem;
+      }
+
+      .section-header h2 {
+        color: #00d9ff;
+        font-size: 1.5rem;
+      }
+
+      .hierarchy-box {
+        background: #111827;
+        border-radius: 12px;
+        padding: 25px;
+        font-family: "Courier New", monospace;
+        font-size: 14px;
+        overflow-x: auto;
+        white-space: pre;
+        color: #10b981;
+        border: 1px solid #1f2937;
+      }
+
+      .model-card {
+        background: #111827;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: 1px solid #374151;
+      }
+
+      .model-header {
+        background: linear-gradient(90deg, #0f3460 0%, #1a1a2e 100%);
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .model-header h3 {
+        color: #00d9ff;
+        font-size: 1.2rem;
+      }
+
+      .model-header .badge {
+        background: #10b981;
+        color: #000;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: bold;
+      }
+
+      .model-body {
+        padding: 20px;
+      }
+
+      .fields-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 15px;
+      }
+
+      .fields-table th,
+      .fields-table td {
+        padding: 10px 15px;
+        text-align: right;
+        border-bottom: 1px solid #374151;
+      }
+
+      .fields-table th {
+        background: #1f2937;
+        color: #9ca3af;
+        font-weight: 600;
+        font-size: 0.85rem;
+      }
+
+      .fields-table td {
+        font-size: 0.9rem;
+      }
+
+      .field-name {
+        color: #f59e0b;
+        font-family: "Courier New", monospace;
+      }
+
+      .field-type {
+        color: #8b5cf6;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+      }
+
+      .field-desc {
+        color: #9ca3af;
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        font-weight: bold;
+        margin-left: 5px;
+      }
+
+      .tag-pk {
+        background: #ef4444;
+        color: white;
+      }
+
+      .tag-fk {
+        background: #3b82f6;
+        color: white;
+      }
+
+      .tag-unique {
+        background: #8b5cf6;
+        color: white;
+      }
+
+      .tag-nullable {
+        background: #6b7280;
+        color: white;
+      }
+
+      .relations-box {
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+
+      .relations-box h4 {
+        color: #10b981;
+        margin-bottom: 10px;
+        font-size: 0.95rem;
+      }
+
+      .relation-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px dashed #374151;
+        font-size: 0.9rem;
+      }
+
+      .relation-item:last-child {
+        border-bottom: none;
+      }
+
+      .relation-arrow {
+        color: #00d9ff;
+      }
+
+      .flow-box {
+        background: #1f2937;
+        border-radius: 12px;
+        padding: 20px;
+        margin-top: 20px;
+        border-right: 4px solid #10b981;
+      }
+
+      .flow-box h4 {
+        color: #10b981;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .flow-step {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 12px;
+        align-items: flex-start;
+      }
+
+      .step-number {
+        background: #00d9ff;
+        color: #000;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+      }
+
+      .step-content {
+        flex: 1;
+        padding-top: 3px;
+      }
+
+      .step-arrow {
+        text-align: center;
+        color: #4b5563;
+        margin: 5px 0 5px 43px;
+      }
+
+      .enum-box {
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+
+      .enum-box h4 {
+        color: #f59e0b;
+        margin-bottom: 10px;
+      }
+
+      .enum-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 10px;
+      }
+
+      .enum-item {
+        background: #111827;
+        padding: 8px 12px;
+        border-radius: 6px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .enum-value {
+        color: #f59e0b;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+      }
+
+      .enum-desc {
+        color: #6b7280;
+        font-size: 0.8rem;
+      }
+
+      .permissions-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+      }
+
+      .permissions-table th,
+      .permissions-table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #374151;
+      }
+
+      .permissions-table th {
+        background: #0f3460;
+        color: #00d9ff;
+      }
+
+      .permissions-table td:first-child {
+        text-align: right;
+        background: #1f2937;
+        font-weight: 600;
+      }
+
+      .check {
+        color: #10b981;
+        font-size: 1.2rem;
+      }
+
+      .cross {
+        color: #ef4444;
+        font-size: 1.2rem;
+      }
+
+      .code-block {
+        background: #111827;
+        border-radius: 8px;
+        padding: 15px;
+        margin: 15px 0;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        overflow-x: auto;
+        border: 1px solid #374151;
+      }
+
+      .code-block .keyword {
+        color: #f59e0b;
+      }
+
+      .code-block .string {
+        color: #10b981;
+      }
+
+      .code-block .comment {
+        color: #6b7280;
+      }
+
+      .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+      }
+
+      .summary-card {
+        background: #111827;
+        border-radius: 12px;
+        padding: 20px;
+        border: 1px solid #374151;
+      }
+
+      .summary-card h4 {
+        color: #00d9ff;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .summary-list {
+        list-style: none;
+      }
+
+      .summary-list li {
+        padding: 8px 0;
+        border-bottom: 1px dashed #374151;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .summary-list li:last-child {
+        border-bottom: none;
+      }
+
+      .nav-sidebar {
+        position: fixed;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: #1f2937;
+        border-radius: 12px;
+        padding: 15px;
+        border: 1px solid #374151;
+        z-index: 100;
+      }
+
+      .nav-sidebar a {
+        display: block;
+        color: #9ca3af;
+        text-decoration: none;
+        padding: 8px 12px;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        transition: all 0.2s;
+      }
+
+      .nav-sidebar a:hover {
+        background: #374151;
+        color: #00d9ff;
+      }
+
+      @media (max-width: 1200px) {
+        .nav-sidebar {
+          display: none;
+        }
+      }
+
+      .webhook-events {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .webhook-event {
+        background: #111827;
+        padding: 12px;
+        border-radius: 8px;
+        border-right: 3px solid #8b5cf6;
+      }
+
+      .webhook-event code {
+        color: #8b5cf6;
+        font-size: 0.9rem;
+      }
+
+      .webhook-event p {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-top: 5px;
+      }
+
+      .index-box {
+        background: #1f2937;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+      }
+
+      .index-box h4 {
+        color: #ef4444;
+        margin-bottom: 10px;
+      }
+
+      .index-item {
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+        padding: 5px 0;
+        color: #f59e0b;
+      }
+
+      .highlight-box {
+        background: linear-gradient(
+          90deg,
+          rgba(16, 185, 129, 0.1) 0%,
+          transparent 100%
+        );
+        border-right: 4px solid #10b981;
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+
+      .highlight-box.warning {
+        background: linear-gradient(
+          90deg,
+          rgba(245, 158, 11, 0.1) 0%,
+          transparent 100%
+        );
+        border-right-color: #f59e0b;
+      }
+
+      .highlight-box.info {
+        background: linear-gradient(
+          90deg,
+          rgba(59, 130, 246, 0.1) 0%,
+          transparent 100%
+        );
+        border-right-color: #3b82f6;
+      }
+
+      footer {
+        text-align: center;
+        padding: 40px 0;
+        color: #6b7280;
+        border-top: 1px solid #374151;
+        margin-top: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="nav-sidebar">
+      <a href="#hierarchy">🏗️ الهيكل</a>
+      <a href="#user">👤 User</a>
+      <a href="#permissions">🔐 Permissions</a>
+      <a href="#plans">💳 Plans</a>
+      <a href="#customer">👥 Customer</a>
+      <a href="#receiver">💰 Receiver</a>
+      <a href="#payment">💸 Payment</a>
+      <a href="#device">📱 Device</a>
+      <a href="#notification">🔔 Notification</a>
+      <a href="#api">🔑 API</a>
+      <a href="#webhook">🌐 Webhook</a>
+      <a href="#audit">📋 Audit</a>
+      <a href="#summary">📊 Summary</a>
+    </nav>
+
+    <div class="container">
+      <header>
+        <h1>🚀 InstaFlow Database Schema</h1>
+        <p>توثيق كامل لهيكل قاعدة البيانات والعلاقات بين الجداول</p>
+      </header>
+
+      <!-- Section: Hierarchy -->
+      <section class="section" id="hierarchy">
+        <div class="section-header">
+          <span class="icon">🏗️</span>
+          <h2>الهيكل العام للنظام</h2>
+        </div>
+
+        <div class="hierarchy-box">
+          ┌─────────────────────────────────────────────────────────────┐ │ USER
+          TYPES │
+          ├─────────────────────────────────────────────────────────────┤ │ 🔴
+          SUPER_ADMIN - صاحب الموقع │ │ 👑 OWNER - صاحب حساب تاجر │ │ 👨‍💼 STAFF -
+          موظف تابع لـ Owner │
+          └─────────────────────────────────────────────────────────────┘ │
+          STAFF مربوط بـ OWNER عن طريق parentUserId │
+          ┌─────────────────────────────────────────────────────────────┐ │ USER
+          HIERARCHY │
+          ├─────────────────────────────────────────────────────────────┤ │ User
+          (OWNER) ─┬── User (STAFF) - parentUserId │ │ ├── User (STAFF) │ │ └──
+          User (STAFF) │
+          └─────────────────────────────────────────────────────────────┘
+        </div>
+      </section>
+
+      <!-- Section: User Model -->
+      <section class="section" id="user">
+        <div class="section-header">
+          <span class="icon">👤</span>
+          <h2>User Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>User</h3>
+            <span class="badge">الموديل الرئيسي</span>
+          </div>
+          <div class="model-body">
+            <p style="color: #9ca3af; margin-bottom: 15px">
+              كل المستخدمين: SuperAdmin, Owner, Staff
+            </p>
+
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">email</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">البريد الإلكتروني</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">passwordHash</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">كلمة المرور المشفرة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">name</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">الاسم</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">type</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">SUPER_ADMIN / OWNER / STAFF</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">parentUserId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">
+                    للـ STAFF فقط - الـ OWNER اللي تابعله
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">status</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">ACTIVE / INACTIVE / SUSPENDED</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">lastLoginAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">آخر تسجيل دخول</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">updatedAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ التحديث</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات (Relations)</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>parent</strong> → User (N:1, self-relation)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>staffMembers[]</strong> → User (1:N,
+                  self-relation)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>permissions[]</strong> → UserPermission (1:N)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>receivers[]</strong> → AccountReceiver (1:N)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>devices[]</strong> → Device (1:N)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>apiKeys[]</strong> → ApiKey (1:N)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>webhookEndpoints[]</strong> → WebhookEndpoint
+                  (1:N)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>subscriptions[]</strong> → Subscription (1:N)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>auditLogs[]</strong> → AuditLog (1:N)</span>
+              </div>
+            </div>
+
+            <div class="highlight-box info">
+              <strong>⭐ parentUserId:</strong><br />
+              • SUPER_ADMIN: null (مفيش parent)<br />
+              • OWNER: null (مفيش parent)<br />
+              • STAFF: parentUserId = الـ OWNER اللي تابعله
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content">SUPER_ADMIN يدير الموقع كله</span>
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >OWNER يسجل حساب جديد (type = OWNER, parentUserId =
+                  null)</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >OWNER يضيف STAFF (type = STAFF, parentUserId = OWNER.id)
+                  ويحدد الصلاحيات</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Permissions -->
+      <section class="section" id="permissions">
+        <div class="section-header">
+          <span class="icon">🔐</span>
+          <h2>Permissions System</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>UserPermission</h3>
+            <span class="badge">صلاحيات كل user</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">page</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">الصفحة/القسم</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">canRead</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية القراءة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">canCreate</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية الإنشاء</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">canUpdate</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية التعديل</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">canDelete</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية الحذف</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="index-box">
+              <h4>🔑 Unique Constraint</h4>
+              <div class="index-item">(userId, page)</div>
+            </div>
+
+            <div class="enum-box">
+              <h4>📄 Pages Enum</h4>
+              <div class="enum-grid">
+                <div class="enum-item">
+                  <span class="enum-value">INTEGRATION</span>
+                  <span class="enum-desc">API & Webhooks</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">RECEIVERS</span>
+                  <span class="enum-desc">حسابات InstaPay</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">PAYMENT_LINKS</span>
+                  <span class="enum-desc">لينكات الدفع</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">REVIEW</span>
+                  <span class="enum-desc">مراجعة الطلبات</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">PAYMENTS</span>
+                  <span class="enum-desc">كل الطلبات</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">CUSTOMERS</span>
+                  <span class="enum-desc">إدارة العملاء</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">USERS</span>
+                  <span class="enum-desc">إدارة الموظفين</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">SETTINGS</span>
+                  <span class="enum-desc">الإعدادات</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">LOGS</span>
+                  <span class="enum-desc">السجلات</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">DEVICES</span>
+                  <span class="enum-desc">الأجهزة</span>
+                </div>
+              </div>
+            </div>
+
+            <h4 style="color: #00d9ff; margin: 20px 0 10px">
+              مثال على صلاحيات موظف:
+            </h4>
+            <table class="permissions-table">
+              <thead>
+                <tr>
+                  <th>الصفحة</th>
+                  <th>Read</th>
+                  <th>Create</th>
+                  <th>Update</th>
+                  <th>Delete</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>PAYMENTS</td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                  <td>REVIEW</td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                  <td>CUSTOMERS</td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="check">✓</span></td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                </tr>
+                <tr>
+                  <td>RECEIVERS</td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                  <td><span class="cross">✗</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Plans -->
+      <section class="section" id="plans">
+        <div class="section-header">
+          <span class="icon">💳</span>
+          <h2>Plans & Subscriptions</h2>
+        </div>
+
+        <!-- Plan Model -->
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Plan</h3>
+            <span class="badge">الخطط المتاحة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">name</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">"Basic", "Pro", "Enterprise"</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">description</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">وصف الخطة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">priceMonthly</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">بالقروش (20000 = 200 EGP)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">متاحة للشراء؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>limits</strong> → PlanLimit (1:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>subscriptions[]</strong> → Subscription (1:N)</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PlanLimit Model -->
+        <div class="model-card">
+          <div class="model-header">
+            <h3>PlanLimit</h3>
+            <span class="badge">حدود كل خطة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">planId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Plan</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxPaymentsPerMonth</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">-1 = unlimited</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxDevices</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد الأجهزة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxReceivers</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد حسابات IPA</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxStaffUsers</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد الموظفين</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxApiKeys</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد API Keys</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">maxWebhooks</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد Webhooks</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">logRetentionDays</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">مدة حفظ السجلات</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">hasApiAccess</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية API</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">hasWebhookAccess</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">صلاحية Webhooks</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">hasAutoMatching</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">المطابقة التلقائية</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Subscription Model -->
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Subscription</h3>
+            <span class="badge">اشتراك User في خطة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (OWNER only)</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">planId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Plan</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">startDate</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">بداية الاشتراك</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">endDate</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">نهاية الاشتراك</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">status</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">ACTIVE / EXPIRED / CANCELLED</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">autoRenew</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">التجديد التلقائي</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>user</strong> → User (N:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>plan</strong> → Plan (N:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>extras[]</strong> → SubscriptionExtra (1:N)</span>
+              </div>
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Subscription Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content">OWNER يسجل → يختار Plan</span>
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >Subscription يتعمل: userId, planId, startDate = now, endDate
+                  = now + 30 days, status = ACTIVE</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >Cron job يتحقق من endDate كل يوم: لو خلص + autoRenew → يجدد،
+                  لو خلص + !autoRenew → status = EXPIRED</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Extra Model -->
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Extra</h3>
+            <span class="badge">الإضافات المتاحة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">name</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">"Extra Device", "Extra Receiver"</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">description</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">وصف الإضافة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">type</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">
+                    DEVICE / RECEIVER / STAFF / PAYMENT_QUOTA / API_KEY
+                  </td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">priceMonthly</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">بالقروش</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">quantityPerUnit</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">كل وحدة بتضيف كام</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">متاحة للشراء؟</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- SubscriptionExtra Model -->
+        <div class="model-card">
+          <div class="model-header">
+            <h3>SubscriptionExtra</h3>
+            <span class="badge">الإضافات المفعلة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">subscriptionId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Subscription</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">extraId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Extra</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">quantity</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد الوحدات المشتراة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">startDate</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">بداية الإضافة</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">endDate</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">نهاية (مع الاشتراك)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="highlight-box">
+              <strong>⭐ مثال:</strong><br />
+              شركة X على خطة "Basic" (1 device) واشترت 2x "Extra Device"<br /><br />
+              <code
+                >SubscriptionExtra: { subscriptionId: 5, extraId: 2, quantity: 2
+                }</code
+              ><br /><br />
+              Total devices = 1 (من Plan) + 2 (من Extra) = 3 devices
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Customer -->
+      <section class="section" id="customer">
+        <div class="section-header">
+          <span class="icon">👥</span>
+          <h2>Customer Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Customer</h3>
+            <span class="badge">العملاء - Global</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">ipa</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">رقم IPA للعميل (globally unique)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">name</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">اسم العميل</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">phone</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">رقم الهاتف</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">email</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">البريد الإلكتروني</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">notes</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">ملاحظات</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">updatedAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ التحديث</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>paymentIntents[]</strong> → PaymentIntent (1:N)</span
+                >
+              </div>
+            </div>
+
+            <div class="highlight-box warning">
+              <strong>⚠️ ملاحظة مهمة:</strong><br />
+              Customer مش مربوط بـ User/Account!<br />
+              نفس العميل (بنفس الـ IPA) ممكن يدفع لأكتر من تاجر.<br />
+              العلاقة بتيجي من PaymentIntent.
+            </div>
+
+            <div class="hierarchy-box" style="margin-top: 15px">
+              Customer: "أحمد" (IPA: 012xxx) PaymentIntents: ├── Payment لـ
+              "متجر A" (receiver بتاع متجر A) ├── Payment لـ "متجر A" (تاني) └──
+              Payment لـ "متجر B" (receiver بتاع متجر B)
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: AccountReceiver -->
+      <section class="section" id="receiver">
+        <div class="section-header">
+          <span class="icon">💰</span>
+          <h2>AccountReceiver Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>AccountReceiver</h3>
+            <span class="badge">حسابات InstaPay للتاجر</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (OWNER only)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">receiverIpa</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">رقم IPA للاستقبال</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">displayName</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">اسم للعرض</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isDefault</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">الافتراضي؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">مفعل؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="index-box">
+              <h4>🔑 Unique Constraint</h4>
+              <div class="index-item">(userId, receiverIpa)</div>
+            </div>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>user</strong> → User (N:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>paymentIntents[]</strong> → PaymentIntent (1:N)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>notifications[]</strong> → Notification (1:N)</span
+                >
+              </div>
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content"
+                  >OWNER يضيف حساب InstaPay بتاعه (receiverIpa = "012xxx",
+                  displayName = "الحساب الرئيسي")</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >لما يعمل PaymentIntent: يختار الـ Receiver اللي يستقبل
+                  عليه</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >العميل يحول على الـ Receiver IPA</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">4</span>
+                <span class="step-content"
+                  >من الـ Receiver نوصل للـ User (صاحب الحساب)</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: PaymentIntent -->
+      <section class="section" id="payment">
+        <div class="section-header">
+          <span class="icon">💸</span>
+          <h2>PaymentIntent Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>PaymentIntent</h3>
+            <span class="badge">الجدول الأهم</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">publicId</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">للـ URL: /pay/{publicId}</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">receiverId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ AccountReceiver</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">customerId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Customer</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">amountMinor</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">بالقروش (10050 = 100.50 EGP)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">currency</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">default: "EGP"</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">reference</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">OrderID / رقم الطلب</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">description</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">وصف الطلب</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">status</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">حالة الدفع</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">expiresAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ انتهاء الصلاحية</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">paidAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الدفع</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">confirmedBy</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">AUTO / MANUAL</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">confirmedByUserId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (لو manual)</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">confidence</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Decimal</span></td>
+                  <td class="field-desc">نسبة الثقة في المطابقة</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">matchedNotificationId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Notification</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">revokeReason</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">سبب الإلغاء</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">metaJson</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">بيانات إضافية</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">updatedAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ التحديث</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="highlight-box info">
+              <strong>⭐ مفيش userId/accountId:</strong><br />
+              الـ receiverId كفاية - من receiver.userId نوصل للـ OWNER
+            </div>
+
+            <div class="enum-box">
+              <h4>📊 Status Enum</h4>
+              <div class="enum-grid">
+                <div class="enum-item">
+                  <span class="enum-value">PENDING</span>
+                  <span class="enum-desc">في انتظار الدفع</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">PAID</span>
+                  <span class="enum-desc">تم الدفع</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">REVIEW_REQUIRED</span>
+                  <span class="enum-desc">محتاج مراجعة</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">CANCELLED</span>
+                  <span class="enum-desc">ملغي</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">EXPIRED</span>
+                  <span class="enum-desc">منتهي الصلاحية</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">REVOKED</span>
+                  <span class="enum-desc">تم التراجع عنه</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="index-box">
+              <h4>📇 Indexes</h4>
+              <div class="index-item">(receiverId, status, createdAt)</div>
+              <div class="index-item">(receiverId, amountMinor)</div>
+              <div class="index-item">(publicId) - UNIQUE</div>
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Payment Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content"
+                  >OWNER/STAFF يعمل PaymentIntent: يختار receiver, يحدد amount,
+                  reference, customer (optional)</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >System يولد: publicId = "pay_abc123", status = PENDING,
+                  expiresAt = now + 24h</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >Payment Link: /pay/pay_abc123 → يتبعت للعميل</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">4</span>
+                <span class="step-content">العميل يدفع على InstaPay</span>
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">5</span>
+                <span class="step-content"
+                  >Notification يوصل → Matching → status = PAID (or
+                  REVIEW_REQUIRED)</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Device -->
+      <section class="section" id="device">
+        <div class="section-header">
+          <span class="icon">📱</span>
+          <h2>Device Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Device</h3>
+            <span class="badge">جهاز Android مربوط</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (OWNER only)</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">deviceToken</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">للربط والتوثيق</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">deviceName</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">اسم الجهاز</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">deviceModel</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">Samsung S21, etc</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">مفعل؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">lastSeenAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">آخر ظهور</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>user</strong> → User (N:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>notifications[]</strong> → Notification (1:N)</span
+                >
+              </div>
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Device Linking Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content"
+                  >OWNER يفتح Dashboard → Devices → "Add Device"</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >System يولد Token مؤقت (صالح 10 دقايق) - يتخزن في Redis/Cache
+                  - يظهر كـ QR Code + نص</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >OWNER يفتح Android App - يدخل الـ Token أو يمسح QR</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">4</span>
+                <span class="step-content"
+                  >App يبعت: POST /api/devices/link { token, deviceName,
+                  deviceModel }</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">5</span>
+                <span class="step-content"
+                  >Server يتحقق: Token صالح؟ Token لسه ما اتستخدمش؟</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">6</span>
+                <span class="step-content"
+                  >Device record يتعمل: userId من الـ Token, deviceToken =
+                  generated unique</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">7</span>
+                <span class="step-content">App يبدأ يبعت Notifications</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Notification -->
+      <section class="section" id="notification">
+        <div class="section-header">
+          <span class="icon">🔔</span>
+          <h2>Notification Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>Notification</h3>
+            <span class="badge">إشعار استلام فلوس</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">deviceId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ Device</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">receiverId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ AccountReceiver</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">sourceApp</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">INSTAPAY, BANK_CIB, etc</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">packageName</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">com.instapay.app</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">rawText</span></td>
+                  <td><span class="field-type">Text</span></td>
+                  <td class="field-desc">النص الكامل للإشعار</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">amountMinor</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">المبلغ المستخرج</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">parsedSenderIpa</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">IPA المرسل</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">parsedSenderName</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">اسم المرسل</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">eventTimestamp</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">وقت الإشعار من الجهاز</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">receivedAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">وقت الوصول للسيرفر</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">dedupeKey</span>
+                    <span class="tag tag-unique">UNIQUE</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">لمنع التكرار</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">parseVersion</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">version الـ parser</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isMatched</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">تم ربطه بـ Intent؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="relations-box">
+              <h4>🔗 العلاقات</h4>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span><strong>device</strong> → Device (N:1)</span>
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>receiver</strong> → AccountReceiver (N:1,
+                  optional)</span
+                >
+              </div>
+              <div class="relation-item">
+                <span class="relation-arrow">→</span>
+                <span
+                  ><strong>paymentIntent</strong> → PaymentIntent (1:1,
+                  optional)</span
+                >
+              </div>
+            </div>
+
+            <div class="highlight-box">
+              <strong>⭐ من device.userId نوصل للـ Owner</strong>
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 Notification Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content"
+                  >InstaPay notification يظهر على الجهاز: "استلمت 100 جنيه من
+                  أحمد"</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >Android App يقرأ الإشعار ويعمل Parse: amount = 10000,
+                  senderName = "أحمد"</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >App يبعت: POST /api/notifications { deviceToken, rawText,
+                  amountMinor, parsedSenderName, eventTimestamp, dedupeKey
+                  }</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">4</span>
+                <span class="step-content"
+                  >Server: يتحقق من deviceToken → يجيب Device، يتحقق من
+                  dedupeKey (مش مكرر)، يعمل Notification record</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">5</span>
+                <span class="step-content"
+                  >Matching Engine يدور على PaymentIntent مناسب: receiver.userId
+                  = device.userId, status = PENDING, amount متطابق</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">6</span>
+                <span class="step-content"
+                  >لو لقى Match: PaymentIntent.status = PAID,
+                  matchedNotificationId = notification.id, isMatched = true,
+                  Trigger Webhook</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: API Integration -->
+      <section class="section" id="api">
+        <div class="section-header">
+          <span class="icon">🔑</span>
+          <h2>API Integration</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>ApiKey</h3>
+            <span class="badge">API Keys للـ External Integration</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (OWNER only)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">name</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">"Production", "Test"</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">keyPrefix</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">أول 8 حروف للعرض: "ipk_abc1"</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">keyHash</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">hash للـ key كامل</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">scopes</span></td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">["intents:read", "intents:write"]</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">lastUsedAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">آخر استخدام</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">expiresAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الانتهاء</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">revokedAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإلغاء</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">مفعل؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="enum-box">
+              <h4>🔐 Scopes</h4>
+              <div class="enum-grid">
+                <div class="enum-item">
+                  <span class="enum-value">intents:read</span>
+                  <span class="enum-desc">قراءة PaymentIntents</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">intents:write</span>
+                  <span class="enum-desc">إنشاء/تعديل</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">customers:read</span>
+                  <span class="enum-desc">قراءة Customers</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">customers:write</span>
+                  <span class="enum-desc">إنشاء/تعديل</span>
+                </div>
+                <div class="enum-item">
+                  <span class="enum-value">webhooks:read</span>
+                  <span class="enum-desc">قراءة Logs</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="highlight-box warning">
+              <strong>⚠️ Security:</strong> الـ Key بيتعرض مرة واحدة بس عند
+              الإنشاء، بعدها بنخزن الـ hash فقط
+            </div>
+
+            <div class="flow-box">
+              <h4>🔄 API Key Flow</h4>
+              <div class="flow-step">
+                <span class="step-number">1</span>
+                <span class="step-content"
+                  >OWNER يعمل API Key من Dashboard</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">2</span>
+                <span class="step-content"
+                  >Server يولد: ipk_abc123xyz789...</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">3</span>
+                <span class="step-content"
+                  >يتعرض مرة واحدة (User يعمل copy)</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">4</span>
+                <span class="step-content"
+                  >Server يخزن: keyPrefix = "ipk_abc1", keyHash =
+                  bcrypt("ipk_abc123xyz789...")</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">5</span>
+                <span class="step-content"
+                  >External system يستخدم: Authorization: Bearer
+                  ipk_abc123xyz789...</span
+                >
+              </div>
+              <div class="step-arrow">↓</div>
+              <div class="flow-step">
+                <span class="step-number">6</span>
+                <span class="step-content"
+                  >Server يتحقق: يجيب ApiKey by keyPrefix → يقارن hash → يتحقق
+                  من scopes</span
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Webhook -->
+      <section class="section" id="webhook">
+        <div class="section-header">
+          <span class="icon">🌐</span>
+          <h2>Webhook System</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>WebhookEndpoint</h3>
+            <span class="badge">URLs لإرسال الـ Webhooks</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (OWNER only)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">url</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">https://mysite.com/webhook</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">secret</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">للتوقيع (X-Signature)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">events</span></td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">قائمة الأحداث</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">isActive</span></td>
+                  <td><span class="field-type">Boolean</span></td>
+                  <td class="field-desc">مفعل؟</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>WebhookDelivery</h3>
+            <span class="badge">سجل إرسال كل Webhook</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">endpointId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ WebhookEndpoint</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">eventType</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">payment.confirmed</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">eventId</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">unique per event</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">payloadJson</span></td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">البيانات المرسلة</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">signature</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">X-Signature header</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">status</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">PENDING / SUCCESS / FAILED</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">attemptCount</span></td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">عدد المحاولات</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">lastAttemptAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">آخر محاولة</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">nextRetryAt</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">المحاولة القادمة</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">responseCode</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Int</span></td>
+                  <td class="field-desc">200, 500, etc</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">responseBody</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">أول 500 حرف</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="index-box">
+              <h4>🔑 Unique Constraint</h4>
+              <div class="index-item">(endpointId, eventId) - idempotency</div>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="color: #00d9ff; margin: 20px 0 15px">📢 Webhook Events</h4>
+        <div class="webhook-events">
+          <div class="webhook-event">
+            <code>payment.created</code>
+            <p>PaymentIntent جديد</p>
+          </div>
+          <div class="webhook-event">
+            <code>payment.confirmed</code>
+            <p>تم التأكيد (Auto/Manual)</p>
+          </div>
+          <div class="webhook-event">
+            <code>payment.review_required</code>
+            <p>محتاج مراجعة</p>
+          </div>
+          <div class="webhook-event">
+            <code>payment.expired</code>
+            <p>انتهت الصلاحية</p>
+          </div>
+          <div class="webhook-event">
+            <code>payment.cancelled</code>
+            <p>تم الإلغاء</p>
+          </div>
+          <div class="webhook-event">
+            <code>payment.revoked</code>
+            <p>تم التراجع</p>
+          </div>
+        </div>
+
+        <div class="flow-box" style="margin-top: 20px">
+          <h4>🔄 Webhook Flow</h4>
+          <div class="flow-step">
+            <span class="step-number">1</span>
+            <span class="step-content"
+              >OWNER يضيف Webhook Endpoint: url, events = ["payment.confirmed",
+              "payment.expired"]</span
+            >
+          </div>
+          <div class="step-arrow">↓</div>
+          <div class="flow-step">
+            <span class="step-number">2</span>
+            <span class="step-content">System يولد secret للتوقيع</span>
+          </div>
+          <div class="step-arrow">↓</div>
+          <div class="flow-step">
+            <span class="step-number">3</span>
+            <span class="step-content"
+              >لما يحصل Event (مثلاً payment.confirmed)</span
+            >
+          </div>
+          <div class="step-arrow">↓</div>
+          <div class="flow-step">
+            <span class="step-number">4</span>
+            <span class="step-content"
+              >System يعمل payload JSON → signature = HMAC(payload, secret) →
+              يبعت POST request</span
+            >
+          </div>
+          <div class="step-arrow">↓</div>
+          <div class="flow-step">
+            <span class="step-number">5</span>
+            <span class="step-content"
+              >WebhookDelivery يتعمل: status = PENDING</span
+            >
+          </div>
+          <div class="step-arrow">↓</div>
+          <div class="flow-step">
+            <span class="step-number">6</span>
+            <span class="step-content"
+              >لو Response 2xx → status = SUCCESS، لو غير كده → status = FAILED,
+              attemptCount++, Retry up to 5 times</span
+            >
+          </div>
+        </div>
+
+        <div class="code-block" style="margin-top: 20px">
+          <span class="comment">// Webhook Payload Example</span>
+          {
+          <span class="string">"event"</span>:
+          <span class="string">"payment.confirmed"</span>,
+          <span class="string">"eventId"</span>:
+          <span class="string">"evt_123456"</span>,
+          <span class="string">"timestamp"</span>:
+          <span class="string">"2026-02-03T10:30:00Z"</span>,
+          <span class="string">"data"</span>: {
+          <span class="string">"paymentIntentId"</span>:
+          <span class="string">"pi_abc123"</span>,
+          <span class="string">"publicId"</span>:
+          <span class="string">"pay_xyz789"</span>,
+          <span class="string">"amount"</span>:
+          <span class="keyword">10050</span>,
+          <span class="string">"currency"</span>:
+          <span class="string">"EGP"</span>,
+          <span class="string">"reference"</span>:
+          <span class="string">"ORDER-123"</span>,
+          <span class="string">"status"</span>:
+          <span class="string">"PAID"</span>,
+          <span class="string">"confirmedBy"</span>:
+          <span class="string">"AUTO"</span>,
+          <span class="string">"paidAt"</span>:
+          <span class="string">"2026-02-03T10:30:00Z"</span> } }
+        </div>
+      </section>
+
+      <!-- Section: AuditLog -->
+      <section class="section" id="audit">
+        <div class="section-header">
+          <span class="icon">📋</span>
+          <h2>AuditLog Model</h2>
+        </div>
+
+        <div class="model-card">
+          <div class="model-header">
+            <h3>AuditLog</h3>
+            <span class="badge">سجل كل الأحداث المهمة</span>
+          </div>
+          <div class="model-body">
+            <table class="fields-table">
+              <thead>
+                <tr>
+                  <th>Field</th>
+                  <th>Type</th>
+                  <th>الوصف</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <span class="field-name">id</span>
+                    <span class="tag tag-pk">PK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">UUID</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userId</span>
+                    <span class="tag tag-fk">FK</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (الحساب - OWNER)</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">actorUserId</span>
+                    <span class="tag tag-fk">FK</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">→ User (مين عمل الـ action)</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">actorType</span></td>
+                  <td><span class="field-type">Enum</span></td>
+                  <td class="field-desc">USER / SYSTEM / API</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">action</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">نوع الـ action</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">entityType</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">PaymentIntent, User, etc</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">entityId</span></td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">ID الـ entity</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">beforeJson</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">الحالة قبل</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">afterJson</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">Json</span></td>
+                  <td class="field-desc">الحالة بعد</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">ipAddress</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">IP Address</td>
+                </tr>
+                <tr>
+                  <td>
+                    <span class="field-name">userAgent</span>
+                    <span class="tag tag-nullable">NULL</span>
+                  </td>
+                  <td><span class="field-type">String</span></td>
+                  <td class="field-desc">Browser/App info</td>
+                </tr>
+                <tr>
+                  <td><span class="field-name">createdAt</span></td>
+                  <td><span class="field-type">DateTime</span></td>
+                  <td class="field-desc">تاريخ الإنشاء</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div class="highlight-box info">
+              <strong>⭐ userId vs actorUserId:</strong><br />
+              • <strong>userId</strong> = الـ OWNER صاحب الحساب (للـ
+              filtering)<br />
+              • <strong>actorUserId</strong> = مين عمل الـ action (OWNER أو
+              STAFF)
+            </div>
+
+            <div class="enum-box">
+              <h4>📝 Actions</h4>
+              <div
+                style="
+                  display: grid;
+                  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+                  gap: 20px;
+                  margin-top: 15px;
+                "
+              >
+                <div>
+                  <h5 style="color: #00d9ff; margin-bottom: 10px">Payment</h5>
+                  <ul
+                    style="list-style: none; color: #9ca3af; font-size: 0.9rem"
+                  >
+                    <li>• INTENT_CREATED</li>
+                    <li>• INTENT_CANCELLED</li>
+                    <li>• INTENT_EXPIRED</li>
+                    <li>• PAYMENT_CONFIRMED_AUTO</li>
+                    <li>• PAYMENT_CONFIRMED_MANUAL</li>
+                    <li>• PAYMENT_REVOKED</li>
+                    <li>• PAYMENT_REVIEW_REQUIRED</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 style="color: #00d9ff; margin-bottom: 10px">Users</h5>
+                  <ul
+                    style="list-style: none; color: #9ca3af; font-size: 0.9rem"
+                  >
+                    <li>• USER_CREATED</li>
+                    <li>• USER_UPDATED</li>
+                    <li>• USER_DELETED</li>
+                    <li>• USER_LOGIN</li>
+                    <li>• USER_LOGOUT</li>
+                    <li>• PASSWORD_CHANGED</li>
+                    <li>• PERMISSIONS_UPDATED</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 style="color: #00d9ff; margin-bottom: 10px">Settings</h5>
+                  <ul
+                    style="list-style: none; color: #9ca3af; font-size: 0.9rem"
+                  >
+                    <li>• RECEIVER_CREATED</li>
+                    <li>• RECEIVER_UPDATED</li>
+                    <li>• RECEIVER_DELETED</li>
+                    <li>• API_KEY_CREATED</li>
+                    <li>• API_KEY_REVOKED</li>
+                    <li>• WEBHOOK_CREATED</li>
+                    <li>• WEBHOOK_UPDATED</li>
+                    <li>• WEBHOOK_DELETED</li>
+                    <li>• DEVICE_LINKED</li>
+                    <li>• DEVICE_REMOVED</li>
+                  </ul>
+                </div>
+                <div>
+                  <h5 style="color: #00d9ff; margin-bottom: 10px">
+                    Subscription
+                  </h5>
+                  <ul
+                    style="list-style: none; color: #9ca3af; font-size: 0.9rem"
+                  >
+                    <li>• SUBSCRIPTION_CREATED</li>
+                    <li>• SUBSCRIPTION_RENEWED</li>
+                    <li>• SUBSCRIPTION_CANCELLED</li>
+                    <li>• EXTRA_PURCHASED</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section: Summary -->
+      <section class="section" id="summary">
+        <div class="section-header">
+          <span class="icon">📊</span>
+          <h2>ملخص الـ Models والربط</h2>
+        </div>
+
+        <div class="hierarchy-box">
+          ┌─────────────────────────────────────────────────────────────────┐ │
+          RELATIONSHIPS MAP │
+          ├─────────────────────────────────────────────────────────────────┤ │
+          │ │ User (SUPER_ADMIN / OWNER / STAFF) │ │ │ │ │ ├── parentUserId ──→
+          User (self, for STAFF) │ │ │ │ │ ├── UserPermission (1:N) │ │ │ │ │
+          ├── AccountReceiver (1:N) ──→ PaymentIntent (1:N) │ │ │ │ │ │ │ └──
+          Customer (N:1) │ │ │ └── Notification (1:1) │ │ │ │ │ ├── Device (1:N)
+          ──→ Notification (1:N) │ │ │ │ │ ├── ApiKey (1:N) │ │ │ │ │ ├──
+          WebhookEndpoint (1:N) ──→ WebhookDelivery (1:N) │ │ │ │ │ ├──
+          Subscription (1:N) ──→ SubscriptionExtra (1:N) │ │ │ │ │ │ │ │ └──
+          Plan ──→ PlanLimit └── Extra │ │ │ │ │ └── AuditLog (1:N) │ │ │ │
+          Customer (Global - no user relation) │ │ └── PaymentIntent (1:N) │ │ │
+          └─────────────────────────────────────────────────────────────────┘
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <h4>👤 Auth & Users</h4>
+            <ul class="summary-list">
+              <li>📌 User</li>
+              <li>📌 UserPermission</li>
+            </ul>
+          </div>
+          <div class="summary-card">
+            <h4>💳 Plans & Billing</h4>
+            <ul class="summary-list">
+              <li>📌 Plan</li>
+              <li>📌 PlanLimit</li>
+              <li>📌 Subscription</li>
+              <li>📌 Extra</li>
+              <li>📌 SubscriptionExtra</li>
+            </ul>
+          </div>
+          <div class="summary-card">
+            <h4>💸 Payment Core</h4>
+            <ul class="summary-list">
+              <li>📌 Customer</li>
+              <li>📌 AccountReceiver</li>
+              <li>📌 PaymentIntent</li>
+            </ul>
+          </div>
+          <div class="summary-card">
+            <h4>📱 Notifications</h4>
+            <ul class="summary-list">
+              <li>📌 Device</li>
+              <li>📌 Notification</li>
+            </ul>
+          </div>
+          <div class="summary-card">
+            <h4>🔗 Integration</h4>
+            <ul class="summary-list">
+              <li>📌 ApiKey</li>
+              <li>📌 WebhookEndpoint</li>
+              <li>📌 WebhookDelivery</li>
+            </ul>
+          </div>
+          <div class="summary-card">
+            <h4>📋 Audit</h4>
+            <ul class="summary-list">
+              <li>📌 AuditLog</li>
+            </ul>
+          </div>
+        </div>
+
+        <div style="margin-top: 30px; text-align: center">
+          <h3 style="color: #10b981; margin-bottom: 15px">
+            📦 Total: 14 Models
+          </h3>
+          <p style="color: #6b7280">
+            User, UserPermission, Plan, PlanLimit, Subscription, Extra,
+            SubscriptionExtra, Customer, AccountReceiver, PaymentIntent, Device,
+            Notification, ApiKey, WebhookEndpoint, WebhookDelivery, AuditLog
+          </p>
+        </div>
+      </section>
+
+      <footer>
+        <p>InstaFlow Database Schema Documentation</p>
+        <p style="margin-top: 10px">Generated: February 2026</p>
+      </footer>
+    </div>
+  </body>
+</html>

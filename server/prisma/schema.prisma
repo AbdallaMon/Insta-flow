@@ -1,0 +1,444 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserType {
+  SUPER_ADMIN
+  OWNER
+  STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+enum PermissionPage {
+  INTEGRATION
+  RECEIVERS
+  PAYMENT_LINKS
+  REVIEW
+  PAYMENTS
+  CUSTOMERS
+  USERS
+  SETTINGS
+  LOGS
+  DEVICES
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
+enum ExtraType {
+  DEVICE
+  RECEIVER
+  STAFF
+  PAYMENT_QUOTA
+  API_KEY
+}
+
+enum PaymentIntentStatus {
+  PENDING
+  PAID
+  REVIEW_REQUIRED
+  CANCELLED
+  EXPIRED
+  REVOKED
+}
+
+enum ConfirmedByType {
+  AUTO
+  MANUAL
+}
+
+enum NotificationSourceApp {
+  INSTAPAY
+  BANK_CIB
+  BANK_ALEX
+  BANK_AHLY
+  BANK_MISR
+  BANK_QNB
+  OTHER
+}
+
+enum WebhookDeliveryStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum AuditActorType {
+  USER
+  SYSTEM
+  API
+}
+
+// ============================================================================
+// USER & PERMISSIONS
+// ============================================================================
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  name         String
+  type         UserType
+  parentUserId String?
+  status       UserStatus @default(ACTIVE)
+  tokenVersion Int        @default(0) // Incremented on logout to invalidate all refresh tokens
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  // Self-relation for STAFF -> OWNER
+  parent       User?  @relation("UserHierarchy", fields: [parentUserId], references: [id], onDelete: SetNull)
+  staffMembers User[] @relation("UserHierarchy")
+
+  // Relations
+  permissions      UserPermission[]
+  receivers        AccountReceiver[]
+  devices          Device[]
+  apiKeys          ApiKey[]
+  webhookEndpoints WebhookEndpoint[]
+  subscriptions    Subscription[]
+  auditLogs        AuditLog[]        @relation("AuditLogOwner")
+  actorAuditLogs   AuditLog[]        @relation("AuditLogActor")
+  confirmedIntents PaymentIntent[]   @relation("ConfirmedByUser")
+
+  @@index([type])
+  @@index([parentUserId])
+  @@index([status])
+}
+
+model UserPermission {
+  id        String         @id @default(cuid())
+  userId    String
+  page      PermissionPage
+  canRead   Boolean        @default(false)
+  canCreate Boolean        @default(false)
+  canUpdate Boolean        @default(false)
+  canDelete Boolean        @default(false)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, page])
+}
+
+// ============================================================================
+// PLANS & SUBSCRIPTIONS
+// ============================================================================
+
+model Plan {
+  id           String   @id @default(cuid())
+  name         String
+  description  String?
+  priceMonthly Int // Amount in piasters (e.g., 20000 = 200 EGP)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+
+  // Relations
+  limits        PlanLimit?
+  subscriptions Subscription[]
+}
+
+model PlanLimit {
+  id                  String  @id @default(cuid())
+  planId              String  @unique
+  maxPaymentsPerMonth Int // -1 = unlimited
+  maxDevices          Int
+  maxReceivers        Int
+  maxStaffUsers       Int
+  maxApiKeys          Int
+  maxWebhooks         Int
+  logRetentionDays    Int // e.g., 30, 90, 365
+  hasApiAccess        Boolean @default(false)
+  hasWebhookAccess    Boolean @default(false)
+  hasAutoMatching     Boolean @default(true)
+
+  plan Plan @relation(fields: [planId], references: [id], onDelete: Cascade)
+}
+
+model Subscription {
+  id        String             @id @default(cuid())
+  userId    String
+  planId    String
+  startDate DateTime
+  endDate   DateTime
+  status    SubscriptionStatus @default(ACTIVE)
+  autoRenew Boolean            @default(true)
+  createdAt DateTime           @default(now())
+
+  user   User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan   Plan                @relation(fields: [planId], references: [id], onDelete: Restrict)
+  extras SubscriptionExtra[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([endDate])
+}
+
+model Extra {
+  id              String    @id @default(cuid())
+  name            String
+  description     String?
+  type            ExtraType
+  priceMonthly    Int // Amount in piasters
+  quantityPerUnit Int       @default(1)
+  isActive        Boolean   @default(true)
+
+  subscriptionExtras SubscriptionExtra[]
+}
+
+model SubscriptionExtra {
+  id             String    @id @default(cuid())
+  subscriptionId String
+  extraId        String
+  quantity       Int       @default(1)
+  startDate      DateTime
+  endDate        DateTime?
+  createdAt      DateTime  @default(now())
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  extra        Extra        @relation(fields: [extraId], references: [id], onDelete: Restrict)
+
+  @@index([subscriptionId])
+}
+
+// ============================================================================
+// CUSTOMER
+// ============================================================================
+
+model Customer {
+  id        String   @id @default(cuid())
+  ipa       String   @unique // Globally unique IPA
+  name      String
+  phone     String?
+  email     String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paymentIntents PaymentIntent[]
+
+  @@index([ipa])
+}
+
+// ============================================================================
+// ACCOUNT RECEIVER (InstaPay accounts for merchants)
+// ============================================================================
+
+model AccountReceiver {
+  id          String   @id @default(cuid())
+  userId      String
+  receiverIpa String
+  displayName String
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentIntents PaymentIntent[]
+  notifications  Notification[]
+
+  @@unique([userId, receiverIpa])
+  @@index([userId])
+}
+
+// ============================================================================
+// PAYMENT INTENT
+// ============================================================================
+
+model PaymentIntent {
+  id                    String              @id @default(cuid())
+  publicId              String              @unique @default(cuid())
+  receiverId            String
+  customerId            String?
+  amountMinor           Int // Amount in piasters (e.g., 10050 = 100.50 EGP)
+  currency              String              @default("EGP")
+  reference             String // Order ID or reference number
+  description           String?
+  status                PaymentIntentStatus @default(PENDING)
+  expiresAt             DateTime
+  paidAt                DateTime?
+  confirmedBy           ConfirmedByType?
+  confirmedByUserId     String?
+  confidence            Decimal?            @db.Decimal(5, 4) // 0.0000 - 1.0000
+  matchedNotificationId String?             @unique
+  revokeReason          String?
+  metaJson              Json?
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+
+  receiver            AccountReceiver @relation(fields: [receiverId], references: [id], onDelete: Restrict)
+  customer            Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  confirmedByUser     User?           @relation("ConfirmedByUser", fields: [confirmedByUserId], references: [id], onDelete: SetNull)
+  matchedNotification Notification?   @relation(fields: [matchedNotificationId], references: [id], onDelete: SetNull)
+
+  @@index([receiverId, status, createdAt])
+  @@index([receiverId, amountMinor])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([reference])
+}
+
+// ============================================================================
+// DEVICE & NOTIFICATION
+// ============================================================================
+
+model Device {
+  id          String    @id @default(cuid())
+  userId      String
+  deviceToken String    @unique
+  deviceName  String
+  deviceModel String?
+  isActive    Boolean   @default(true)
+  lastSeenAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  notifications Notification[]
+
+  @@index([userId])
+  @@index([deviceToken])
+}
+
+model Notification {
+  id               String                @id @default(cuid())
+  deviceId         String
+  receiverId       String?
+  sourceApp        NotificationSourceApp
+  packageName      String?
+  rawText          String
+  amountMinor      Int?
+  parsedSenderIpa  String?
+  parsedSenderName String?
+  eventTimestamp   DateTime
+  receivedAt       DateTime              @default(now())
+  dedupeKey        String                @unique
+  parseVersion     String                @default("v1")
+  isMatched        Boolean               @default(false)
+  createdAt        DateTime              @default(now())
+
+  device        Device           @relation(fields: [deviceId], references: [id], onDelete: Cascade)
+  receiver      AccountReceiver? @relation(fields: [receiverId], references: [id], onDelete: SetNull)
+  paymentIntent PaymentIntent?
+
+  @@index([deviceId])
+  @@index([receiverId])
+  @@index([amountMinor])
+  @@index([eventTimestamp])
+  @@index([isMatched])
+}
+
+// ============================================================================
+// API INTEGRATION
+// ============================================================================
+
+model ApiKey {
+  id         String    @id @default(cuid())
+  userId     String
+  name       String
+  keyPrefix  String // First 8 chars for display: "ipk_abc1"
+  keyHash    String // Hashed full key
+  scopes     Json // ["intents:read", "intents:write", etc.]
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  revokedAt  DateTime?
+  isActive   Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([keyPrefix])
+  @@index([isActive])
+}
+
+// ============================================================================
+// WEBHOOK SYSTEM
+// ============================================================================
+
+model WebhookEndpoint {
+  id        String   @id @default(cuid())
+  userId    String
+  url       String
+  secret    String // For signing (X-Signature)
+  events    Json // ["payment.confirmed", "payment.expired", etc.]
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  user       User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deliveries WebhookDelivery[]
+
+  @@index([userId])
+  @@index([isActive])
+}
+
+model WebhookDelivery {
+  id            String                @id @default(cuid())
+  endpointId    String
+  eventType     String
+  eventId       String // Unique per event for idempotency
+  payloadJson   Json
+  signature     String
+  status        WebhookDeliveryStatus @default(PENDING)
+  attemptCount  Int                   @default(0)
+  lastAttemptAt DateTime?
+  nextRetryAt   DateTime?
+  responseCode  Int?
+  responseBody  String? // First 500 chars
+  createdAt     DateTime              @default(now())
+
+  endpoint WebhookEndpoint @relation(fields: [endpointId], references: [id], onDelete: Cascade)
+
+  @@unique([endpointId, eventId])
+  @@index([status])
+  @@index([nextRetryAt])
+}
+
+// ============================================================================
+// AUDIT LOG
+// ============================================================================
+
+model AuditLog {
+  id          String         @id @default(cuid())
+  userId      String // The OWNER's account (for filtering)
+  actorUserId String? // Who performed the action
+  actorType   AuditActorType
+  action      String // e.g., INTENT_CREATED, USER_LOGIN, etc.
+  entityType  String // e.g., PaymentIntent, User, etc.
+  entityId    String?
+  beforeJson  Json?
+  afterJson   Json?
+  ipAddress   String?
+  userAgent   String?
+  createdAt   DateTime       @default(now())
+
+  user      User  @relation("AuditLogOwner", fields: [userId], references: [id], onDelete: Cascade)
+  actorUser User? @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([actorUserId])
+  @@index([action])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

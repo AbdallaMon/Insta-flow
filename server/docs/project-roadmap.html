@@ -1,0 +1,3001 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>InstaFlow - Project Development Roadmap</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        color: #e4e4e4;
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      .container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      /* ==================== HEADER ==================== */
+      header {
+        text-align: center;
+        padding: 40px 0;
+        border-bottom: 2px solid #0f3460;
+        margin-bottom: 30px;
+      }
+
+      header h1 {
+        font-size: 2.5rem;
+        color: #00d9ff;
+        margin-bottom: 10px;
+      }
+
+      header p {
+        color: #888;
+        font-size: 1.1rem;
+        margin-bottom: 20px;
+      }
+
+      /* ==================== PROGRESS BAR ==================== */
+      .progress-section {
+        background: #1f2937;
+        border-radius: 16px;
+        padding: 25px;
+        margin-bottom: 30px;
+        border: 1px solid #374151;
+      }
+
+      .progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 15px;
+      }
+
+      .progress-title {
+        color: #00d9ff;
+        font-size: 1.3rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .progress-stats {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+
+      .stat-box {
+        background: #111827;
+        padding: 10px 20px;
+        border-radius: 10px;
+        text-align: center;
+        min-width: 100px;
+      }
+
+      .stat-number {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: #00d9ff;
+      }
+
+      .stat-label {
+        font-size: 0.8rem;
+        color: #9ca3af;
+      }
+
+      .stat-box.completed .stat-number {
+        color: #10b981;
+      }
+
+      .stat-box.pending .stat-number {
+        color: #f59e0b;
+      }
+
+      .progress-bar-container {
+        background: #111827;
+        border-radius: 10px;
+        height: 25px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .progress-bar {
+        background: linear-gradient(90deg, #10b981, #00d9ff);
+        height: 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .progress-text {
+        position: absolute;
+        width: 100%;
+        text-align: center;
+        font-weight: bold;
+        font-size: 0.85rem;
+        line-height: 25px;
+        color: #fff;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      }
+
+      /* ==================== CONTROLS ==================== */
+      .controls {
+        display: flex;
+        gap: 15px;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        background: #1f2937;
+        color: #9ca3af;
+        border: 1px solid #374151;
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+      }
+
+      .filter-btn:hover {
+        background: #374151;
+        color: #fff;
+      }
+
+      .filter-btn.active {
+        background: #00d9ff;
+        color: #000;
+        border-color: #00d9ff;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 10px;
+      }
+
+      .action-btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        border: none;
+        transition: all 0.3s ease;
+      }
+
+      .action-btn.reset {
+        background: #ef4444;
+        color: #fff;
+      }
+
+      .action-btn.reset:hover {
+        background: #dc2626;
+      }
+
+      .action-btn.export {
+        background: #8b5cf6;
+        color: #fff;
+      }
+
+      .action-btn.export:hover {
+        background: #7c3aed;
+      }
+
+      .action-btn.collapse-all {
+        background: #374151;
+        color: #fff;
+      }
+
+      .action-btn.collapse-all:hover {
+        background: #4b5563;
+      }
+
+      /* ==================== FEATURE SECTION ==================== */
+      .feature-section {
+        background: #1f2937;
+        border-radius: 16px;
+        margin-bottom: 25px;
+        border: 1px solid #374151;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      }
+
+      .feature-header {
+        background: linear-gradient(90deg, #0f3460 0%, #1a1a2e 100%);
+        padding: 20px 25px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background 0.3s ease;
+      }
+
+      .feature-header:hover {
+        background: linear-gradient(90deg, #1a4a7a 0%, #252550 100%);
+      }
+
+      .feature-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .feature-icon {
+        font-size: 1.8rem;
+      }
+
+      .feature-name {
+        color: #00d9ff;
+        font-size: 1.4rem;
+        margin: 0;
+      }
+
+      .feature-name-ar {
+        color: #9ca3af;
+        font-size: 0.95rem;
+        margin-top: 3px;
+      }
+
+      .feature-meta {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+
+      .feature-progress {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .feature-progress-bar {
+        width: 150px;
+        height: 8px;
+        background: #111827;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .feature-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #10b981, #00d9ff);
+        transition: width 0.3s ease;
+      }
+
+      .feature-progress-text {
+        color: #9ca3af;
+        font-size: 0.9rem;
+        min-width: 45px;
+      }
+
+      .feature-toggle {
+        color: #9ca3af;
+        font-size: 1.5rem;
+        transition: transform 0.3s ease;
+      }
+
+      .feature-section.collapsed .feature-toggle {
+        transform: rotate(-90deg);
+      }
+
+      .feature-section.collapsed .feature-content {
+        display: none;
+      }
+
+      .feature-content {
+        padding: 25px;
+      }
+
+      .feature-description {
+        background: #111827;
+        padding: 15px 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-right: 4px solid #00d9ff;
+      }
+
+      .feature-description p {
+        color: #9ca3af;
+        font-size: 0.95rem;
+      }
+
+      /* ==================== SUB-FEATURE ==================== */
+      .sub-feature {
+        background: #111827;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        overflow: hidden;
+        border: 1px solid #374151;
+      }
+
+      .sub-feature:last-child {
+        margin-bottom: 0;
+      }
+
+      .sub-feature-header {
+        background: #1a2332;
+        padding: 15px 20px;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .sub-feature-header:hover {
+        background: #1f2a3c;
+      }
+
+      .sub-feature-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+
+      .sub-feature-icon {
+        font-size: 1.2rem;
+      }
+
+      .sub-feature-name {
+        color: #f59e0b;
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .sub-feature-name-ar {
+        color: #6b7280;
+        font-size: 0.85rem;
+        margin-right: 10px;
+      }
+
+      .sub-feature-progress {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .sub-feature-progress-bar {
+        width: 100px;
+        height: 6px;
+        background: #0f172a;
+        border-radius: 3px;
+        overflow: hidden;
+      }
+
+      .sub-feature-progress-fill {
+        height: 100%;
+        background: #f59e0b;
+        transition: width 0.3s ease;
+      }
+
+      .sub-feature-toggle {
+        color: #6b7280;
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+      }
+
+      .sub-feature.collapsed .sub-feature-toggle {
+        transform: rotate(-90deg);
+      }
+
+      .sub-feature.collapsed .sub-feature-content {
+        display: none;
+      }
+
+      .sub-feature-content {
+        padding: 20px;
+      }
+
+      /* ==================== TASK GROUPS ==================== */
+      .task-groups {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 20px;
+      }
+
+      .task-group {
+        background: #0f172a;
+        border-radius: 10px;
+        padding: 20px;
+        border: 1px solid #1e293b;
+      }
+
+      .task-group-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #1e293b;
+      }
+
+      .task-group-icon {
+        font-size: 1.3rem;
+      }
+
+      .task-group-title {
+        font-size: 1rem;
+        font-weight: 600;
+      }
+
+      .task-group.frontend .task-group-title {
+        color: #3b82f6;
+      }
+
+      .task-group.backend .task-group-title {
+        color: #10b981;
+      }
+
+      .task-group.database .task-group-title {
+        color: #8b5cf6;
+      }
+
+      .task-group.testing .task-group-title {
+        color: #f59e0b;
+      }
+
+      /* ==================== TASKS ==================== */
+      .task-list {
+        list-style: none;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 12px;
+        margin-bottom: 8px;
+        background: #111827;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .task-item:hover {
+        background: #1a2332;
+      }
+
+      .task-item.completed {
+        opacity: 0.7;
+      }
+
+      .task-item.completed .task-text {
+        text-decoration: line-through;
+        color: #6b7280;
+      }
+
+      .task-checkbox {
+        width: 22px;
+        height: 22px;
+        border: 2px solid #4b5563;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        margin-top: 2px;
+      }
+
+      .task-checkbox:hover {
+        border-color: #00d9ff;
+      }
+
+      .task-item.completed .task-checkbox {
+        background: #10b981;
+        border-color: #10b981;
+      }
+
+      .task-checkbox .checkmark {
+        display: none;
+        color: #fff;
+        font-size: 14px;
+      }
+
+      .task-item.completed .task-checkbox .checkmark {
+        display: block;
+      }
+
+      .task-content {
+        flex: 1;
+      }
+
+      .task-text {
+        color: #e4e4e4;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+
+      .task-details {
+        color: #6b7280;
+        font-size: 0.8rem;
+        line-height: 1.4;
+      }
+
+      .task-tags {
+        display: flex;
+        gap: 6px;
+        margin-top: 8px;
+        flex-wrap: wrap;
+      }
+
+      .task-tag {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-weight: 600;
+      }
+
+      .task-tag.api {
+        background: #3b82f6;
+        color: #fff;
+      }
+
+      .task-tag.ui {
+        background: #8b5cf6;
+        color: #fff;
+      }
+
+      .task-tag.db {
+        background: #10b981;
+        color: #fff;
+      }
+
+      .task-tag.security {
+        background: #ef4444;
+        color: #fff;
+      }
+
+      .task-tag.validation {
+        background: #f59e0b;
+        color: #000;
+      }
+
+      .task-tag.required {
+        background: #dc2626;
+        color: #fff;
+      }
+
+      .task-tag.optional {
+        background: #6b7280;
+        color: #fff;
+      }
+
+      /* ==================== NOTES ==================== */
+      .notes-section {
+        background: #1a2332;
+        border-radius: 10px;
+        padding: 15px 20px;
+        margin-top: 20px;
+        border-right: 4px solid #f59e0b;
+      }
+
+      .notes-section h5 {
+        color: #f59e0b;
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .notes-section ul {
+        margin-right: 20px;
+        color: #9ca3af;
+        font-size: 0.9rem;
+      }
+
+      .notes-section li {
+        margin-bottom: 5px;
+      }
+
+      /* ==================== API DETAILS ==================== */
+      .api-details {
+        background: #0f172a;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 15px;
+        font-family: "Courier New", monospace;
+        font-size: 0.85rem;
+      }
+
+      .api-method {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+        margin-left: 10px;
+      }
+
+      .api-method.get {
+        background: #3b82f6;
+        color: #fff;
+      }
+
+      .api-method.post {
+        background: #10b981;
+        color: #fff;
+      }
+
+      .api-method.put {
+        background: #f59e0b;
+        color: #000;
+      }
+
+      .api-method.delete {
+        background: #ef4444;
+        color: #fff;
+      }
+
+      .api-endpoint {
+        color: #00d9ff;
+      }
+
+      /* ==================== RESPONSIVE ==================== */
+      @media (max-width: 768px) {
+        .container {
+          padding: 10px;
+        }
+
+        header h1 {
+          font-size: 1.8rem;
+        }
+
+        .progress-header {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        .filter-buttons {
+          justify-content: center;
+        }
+
+        .task-groups {
+          grid-template-columns: 1fr;
+        }
+
+        .feature-progress-bar {
+          display: none;
+        }
+
+        .stat-box {
+          min-width: 80px;
+          padding: 8px 12px;
+        }
+
+        .stat-number {
+          font-size: 1.4rem;
+        }
+      }
+
+      /* ==================== ANIMATIONS ==================== */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .feature-section {
+        animation: fadeIn 0.3s ease;
+      }
+
+      /* ==================== SCROLLBAR ==================== */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #1a1a2e;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: #374151;
+        border-radius: 5px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: #4b5563;
+      }
+
+      /* ==================== TOAST NOTIFICATION ==================== */
+      .toast {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #1f2937;
+        color: #fff;
+        padding: 15px 25px;
+        border-radius: 10px;
+        border: 1px solid #374151;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        z-index: 1000;
+        transition: transform 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .toast.success {
+        border-color: #10b981;
+      }
+
+      .toast.warning {
+        border-color: #f59e0b;
+      }
+
+      /* ==================== SEARCH ==================== */
+      .search-box {
+        position: relative;
+        flex: 1;
+        max-width: 300px;
+      }
+
+      .search-box input {
+        width: 100%;
+        padding: 10px 15px 10px 40px;
+        border-radius: 8px;
+        border: 1px solid #374151;
+        background: #111827;
+        color: #e4e4e4;
+        font-size: 0.9rem;
+      }
+
+      .search-box input:focus {
+        outline: none;
+        border-color: #00d9ff;
+      }
+
+      .search-box .search-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6b7280;
+      }
+
+      /* ==================== HIDDEN CLASS ==================== */
+      .hidden {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <!-- HEADER -->
+      <header>
+        <h1>🚀 InstaFlow Development Roadmap</h1>
+        <p>خارطة طريق التطوير الكاملة - كل المهام والتفاصيل</p>
+      </header>
+
+      <!-- PROGRESS SECTION -->
+      <div class="progress-section">
+        <div class="progress-header">
+          <div class="progress-title">
+            <span>📊</span>
+            <span>التقدم الإجمالي للمشروع</span>
+          </div>
+          <div class="progress-stats">
+            <div class="stat-box completed">
+              <div class="stat-number" id="completed-count">0</div>
+              <div class="stat-label">مكتملة</div>
+            </div>
+            <div class="stat-box pending">
+              <div class="stat-number" id="pending-count">0</div>
+              <div class="stat-label">متبقية</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-number" id="total-count">0</div>
+              <div class="stat-label">إجمالي</div>
+            </div>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="total-progress" style="width: 0%"></div>
+          <div class="progress-text" id="progress-percentage">0%</div>
+        </div>
+      </div>
+
+      <!-- CONTROLS -->
+      <div class="controls">
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">الكل</button>
+          <button class="filter-btn" data-filter="pending">المتبقية</button>
+          <button class="filter-btn" data-filter="completed">المكتملة</button>
+          <button class="filter-btn" data-filter="frontend">Frontend</button>
+          <button class="filter-btn" data-filter="backend">Backend</button>
+        </div>
+        <div class="search-box">
+          <input type="text" id="search-input" placeholder="بحث في المهام..." />
+          <span class="search-icon">🔍</span>
+        </div>
+        <div class="action-buttons">
+          <button class="action-btn collapse-all" id="collapse-all">
+            طي/فتح الكل
+          </button>
+          <button class="action-btn export" id="export-btn">📥 تصدير</button>
+          <button class="action-btn reset" id="reset-btn">
+            🔄 إعادة تعيين
+          </button>
+        </div>
+      </div>
+
+      <!-- FEATURES CONTAINER -->
+      <div id="features-container">
+        <!-- Features will be injected here by JavaScript -->
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast">
+      <span id="toast-icon">✅</span>
+      <span id="toast-message">تم الحفظ</span>
+    </div>
+
+    <script>
+      // ============================================================================
+      // PROJECT DATA - كل الـ Features والـ Tasks
+      // ============================================================================
+      const projectData = {
+        features: [
+          // ==================== FEATURE 1: AUTH & SECURITY ====================
+          {
+            id: "auth",
+            icon: "🔐",
+            name: "Authentication & Security",
+            nameAr: "التسجيل والأمان",
+            description:
+              "نظام المصادقة الكامل: تسجيل الدخول، إنشاء حساب، استعادة كلمة المرور، وإدارة الجلسات بـ JWT",
+            subFeatures: [
+              {
+                id: "signup",
+                icon: "📝",
+                name: "Sign Up",
+                nameAr: "إنشاء حساب جديد",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "signup-fe-1",
+                      text: "إنشاء صفحة التسجيل (SignupPage.tsx)",
+                      details:
+                        "تصميم الصفحة مع form يحتوي على: email, password, name",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "signup-fe-2",
+                      text: "إضافة Form Validation",
+                      details:
+                        "التحقق من صحة البيانات: email format, password min 8 chars, name 2-100 chars",
+                      tags: ["validation", "required"],
+                    },
+                    {
+                      id: "signup-fe-3",
+                      text: "إنشاء Auth Service",
+                      details:
+                        "service/authService.ts - دالة signup() للتواصل مع API",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "signup-fe-4",
+                      text: "إدارة حالة التسجيل (Loading, Error, Success)",
+                      details:
+                        "عرض spinner أثناء التحميل، رسائل الخطأ، وredirect عند النجاح",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "signup-fe-5",
+                      text: "تخزين Tokens في localStorage",
+                      details:
+                        "حفظ accessToken و refreshToken بعد التسجيل الناجح",
+                      tags: ["security"],
+                    },
+                    {
+                      id: "signup-fe-6",
+                      text: "إضافة رسائل الخطأ بالعربي",
+                      details:
+                        "ترجمة كل error codes: EMAIL_ALREADY_EXISTS, VALIDATION_ERROR, etc.",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "signup-be-1",
+                      text: "إنشاء Signup Endpoint",
+                      details:
+                        "POST /api/auth/signup - استقبال email, password, name",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/signup",
+                      },
+                    },
+                    {
+                      id: "signup-be-2",
+                      text: "إنشاء Signup Validator",
+                      details:
+                        "auth.validators.ts - التحقق من البيانات المدخلة باستخدام zod أو joi",
+                      tags: ["validation", "required"],
+                    },
+                    {
+                      id: "signup-be-3",
+                      text: "تشفير كلمة المرور",
+                      details: "استخدام bcrypt لتشفير password قبل الحفظ في DB",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "signup-be-4",
+                      text: "إنشاء User في Database",
+                      details:
+                        "prisma.user.create() - مع type: OWNER بشكل افتراضي",
+                      tags: ["db", "required"],
+                    },
+                    {
+                      id: "signup-be-5",
+                      text: "توليد JWT Tokens",
+                      details:
+                        "إنشاء accessToken (15 دقيقة) و refreshToken (7 أيام)",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "signup-be-6",
+                      text: "التحقق من عدم تكرار Email",
+                      details:
+                        "التأكد من عدم وجود user بنفس الـ email وإرجاع EMAIL_ALREADY_EXISTS",
+                      tags: ["validation", "required"],
+                    },
+                    {
+                      id: "signup-be-7",
+                      text: "إضافة Audit Log للتسجيل",
+                      details: "تسجيل حدث USER_SIGNUP في AuditLog",
+                      tags: ["security", "optional"],
+                    },
+                  ],
+                },
+                notes: [
+                  "الـ User يتسجل كـ OWNER بشكل افتراضي",
+                  "الـ SUPER_ADMIN يتم إنشاؤه يدوياً أو من خلال seed",
+                  "الـ access token صلاحيته 15 دقيقة فقط لأسباب أمنية",
+                ],
+              },
+              {
+                id: "login",
+                icon: "🔑",
+                name: "Login",
+                nameAr: "تسجيل الدخول",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "login-fe-1",
+                      text: "إنشاء صفحة تسجيل الدخول (LoginPage.tsx)",
+                      details:
+                        "form يحتوي على email و password مع زر تسجيل الدخول",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "login-fe-2",
+                      text: "إضافة Form Validation",
+                      details: "التحقق من email format و password مش فاضي",
+                      tags: ["validation", "required"],
+                    },
+                    {
+                      id: "login-fe-3",
+                      text: "Integration مع Login API",
+                      details: "استدعاء POST /api/auth/login وتخزين الـ tokens",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "login-fe-4",
+                      text: "التعامل مع حالات الخطأ",
+                      details:
+                        "INVALID_CREDENTIALS, USER_SUSPENDED, USER_INACTIVE",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "login-fe-5",
+                      text: "إضافة Remember Me (اختياري)",
+                      details: "خيار لحفظ الجلسة لفترة أطول",
+                      tags: ["ui", "optional"],
+                    },
+                    {
+                      id: "login-fe-6",
+                      text: "Redirect بعد Login ناجح",
+                      details:
+                        "توجيه المستخدم للـ Dashboard أو الصفحة المطلوبة سابقاً",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "login-be-1",
+                      text: "إنشاء Login Endpoint",
+                      details:
+                        "POST /api/auth/login - استقبال email و password",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/login",
+                      },
+                    },
+                    {
+                      id: "login-be-2",
+                      text: "التحقق من وجود User",
+                      details: "البحث عن user بالـ email في database",
+                      tags: ["db", "required"],
+                    },
+                    {
+                      id: "login-be-3",
+                      text: "التحقق من كلمة المرور",
+                      details:
+                        "مقارنة الـ password المدخل مع passwordHash باستخدام bcrypt.compare",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "login-be-4",
+                      text: "التحقق من حالة User",
+                      details: "التأكد أن status = ACTIVE، وإلا رفض الدخول",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "login-be-5",
+                      text: "توليد JWT Tokens",
+                      details: "إنشاء access و refresh tokens جديدة",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "login-be-6",
+                      text: "تحديث lastLoginAt",
+                      details: "تحديث وقت آخر تسجيل دخول في User record",
+                      tags: ["db"],
+                    },
+                    {
+                      id: "login-be-7",
+                      text: "إضافة Audit Log للدخول",
+                      details:
+                        "تسجيل حدث USER_LOGIN في AuditLog مع IP و userAgent",
+                      tags: ["security", "optional"],
+                    },
+                  ],
+                },
+                notes: [
+                  "لا تكشف إذا كان الـ email موجود أم لا (رسالة موحدة)",
+                  "سجل محاولات الدخول الفاشلة للـ security",
+                ],
+              },
+              {
+                id: "refresh-token",
+                icon: "🔄",
+                name: "Token Refresh",
+                nameAr: "تجديد الجلسة",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "refresh-fe-1",
+                      text: "إنشاء Axios Interceptor للـ Token Refresh",
+                      details:
+                        "اعتراض responses الـ 401 وتجديد الـ token تلقائياً",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "refresh-fe-2",
+                      text: "Queue للـ Requests أثناء التجديد",
+                      details:
+                        "تخزين الـ requests الفاشلة وإعادة تنفيذها بعد التجديد",
+                      tags: ["api"],
+                    },
+                    {
+                      id: "refresh-fe-3",
+                      text: "Logout تلقائي عند فشل التجديد",
+                      details:
+                        "إذا فشل refresh، نفذ logout وأعد توجيه للـ login",
+                      tags: ["security", "required"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "refresh-be-1",
+                      text: "إنشاء Refresh Token Endpoint",
+                      details: "POST /api/auth/refresh - استقبال refreshToken",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/refresh",
+                      },
+                    },
+                    {
+                      id: "refresh-be-2",
+                      text: "التحقق من صلاحية Refresh Token",
+                      details: "التأكد أن الـ token صالح ولم تنتهِ صلاحيته",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "refresh-be-3",
+                      text: "التحقق من tokenVersion",
+                      details:
+                        "مقارنة tokenVersion في الـ token مع الـ DB (لإلغاء كل الـ tokens)",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "refresh-be-4",
+                      text: "توليد Tokens جديدة",
+                      details: "إنشاء access و refresh tokens جديدة",
+                      tags: ["security", "required"],
+                    },
+                  ],
+                },
+                notes: [
+                  "الـ tokenVersion يسمح بإلغاء كل الـ refresh tokens دفعة واحدة",
+                  "استخدم Token Rotation لأمان أكبر (كل refresh يولد token جديد)",
+                ],
+              },
+              {
+                id: "forgot-password",
+                icon: "❓",
+                name: "Forgot Password",
+                nameAr: "نسيت كلمة المرور",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "forgot-fe-1",
+                      text: "إنشاء صفحة نسيت كلمة المرور",
+                      details: "form بسيط يحتوي على email فقط",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "forgot-fe-2",
+                      text: "Integration مع API",
+                      details: "استدعاء POST /api/auth/forgot-password",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "forgot-fe-3",
+                      text: "عرض رسالة نجاح",
+                      details:
+                        "رسالة موحدة: 'إذا كان البريد موجود، تم إرسال رابط'",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "forgot-be-1",
+                      text: "إنشاء Forgot Password Endpoint",
+                      details: "POST /api/auth/forgot-password",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/forgot-password",
+                      },
+                    },
+                    {
+                      id: "forgot-be-2",
+                      text: "توليد Reset Token",
+                      details: "JWT token بصلاحية ساعة واحدة فقط",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "forgot-be-3",
+                      text: "إرسال Email (اختياري حالياً)",
+                      details: "إرسال رابط إعادة التعيين عبر البريد",
+                      tags: ["optional"],
+                    },
+                  ],
+                },
+                notes: [
+                  "⚠️ في الـ production، الـ reset token لا يُرجع في الـ response، يُرسل بالبريد فقط",
+                  "رسالة النجاح موحدة حتى لو الـ email غير موجود (security)",
+                ],
+              },
+              {
+                id: "reset-password",
+                icon: "🔑",
+                name: "Reset Password",
+                nameAr: "إعادة تعيين كلمة المرور",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "reset-fe-1",
+                      text: "إنشاء صفحة إعادة التعيين",
+                      details: "form يحتوي على newPassword و confirmPassword",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "reset-fe-2",
+                      text: "استخراج Token من URL",
+                      details: "قراءة الـ token من query params",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "reset-fe-3",
+                      text: "Integration مع API",
+                      details: "استدعاء POST /api/auth/reset-password",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "reset-fe-4",
+                      text: "Redirect للـ Login بعد النجاح",
+                      details:
+                        "توجيه المستخدم لتسجيل الدخول بكلمة المرور الجديدة",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "reset-be-1",
+                      text: "إنشاء Reset Password Endpoint",
+                      details: "POST /api/auth/reset-password",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/reset-password",
+                      },
+                    },
+                    {
+                      id: "reset-be-2",
+                      text: "التحقق من Reset Token",
+                      details: "التأكد من صلاحية الـ token وعدم انتهائه",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "reset-be-3",
+                      text: "تحديث كلمة المرور",
+                      details: "تشفير الـ password الجديد وتحديثه في DB",
+                      tags: ["db", "security", "required"],
+                    },
+                    {
+                      id: "reset-be-4",
+                      text: "إلغاء كل الـ Sessions",
+                      details:
+                        "زيادة tokenVersion لإلغاء كل الـ refresh tokens",
+                      tags: ["security"],
+                    },
+                  ],
+                },
+              },
+              {
+                id: "change-password",
+                icon: "🔐",
+                name: "Change Password",
+                nameAr: "تغيير كلمة المرور",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "change-fe-1",
+                      text: "إنشاء Modal/Page لتغيير كلمة المرور",
+                      details:
+                        "form: currentPassword, newPassword, confirmPassword",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "change-fe-2",
+                      text: "Validation للـ Password",
+                      details: "التأكد من تطابق newPassword و confirmPassword",
+                      tags: ["validation", "required"],
+                    },
+                    {
+                      id: "change-fe-3",
+                      text: "Integration مع API",
+                      details:
+                        "استدعاء POST /api/auth/change-password مع Authorization header",
+                      tags: ["api", "required"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "change-be-1",
+                      text: "إنشاء Change Password Endpoint",
+                      details: "POST /api/auth/change-password (محمي)",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/change-password",
+                      },
+                    },
+                    {
+                      id: "change-be-2",
+                      text: "التحقق من كلمة المرور الحالية",
+                      details: "مقارنة currentPassword مع الـ hash في DB",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "change-be-3",
+                      text: "تحديث كلمة المرور",
+                      details: "تشفير وحفظ الـ password الجديد",
+                      tags: ["db", "security", "required"],
+                    },
+                  ],
+                },
+              },
+              {
+                id: "me",
+                icon: "👤",
+                name: "Get Current User",
+                nameAr: "جلب بيانات المستخدم الحالي",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "me-fe-1",
+                      text: "إنشاء Auth Context",
+                      details: "React Context لتخزين بيانات المستخدم الحالي",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "me-fe-2",
+                      text: "جلب User عند App Load",
+                      details: "استدعاء GET /api/auth/me عند وجود token",
+                      tags: ["api", "required"],
+                    },
+                    {
+                      id: "me-fe-3",
+                      text: "إنشاء useAuth Hook",
+                      details: "hook لسهولة الوصول لبيانات المستخدم",
+                      tags: ["required"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "me-be-1",
+                      text: "إنشاء Get Me Endpoint",
+                      details: "GET /api/auth/me (محمي)",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "GET", endpoint: "/api/auth/me" },
+                    },
+                    {
+                      id: "me-be-2",
+                      text: "استخراج User من Token",
+                      details: "فك الـ JWT واستخدام userId للبحث في DB",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "me-be-3",
+                      text: "إرجاع بيانات User",
+                      details:
+                        "إرجاع id, email, name, type, status, parentUserId",
+                      tags: ["api", "required"],
+                    },
+                  ],
+                },
+              },
+              {
+                id: "logout",
+                icon: "🚪",
+                name: "Logout",
+                nameAr: "تسجيل الخروج",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "logout-fe-1",
+                      text: "إنشاء Logout Function",
+                      details: "مسح الـ tokens من localStorage و state",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "logout-fe-2",
+                      text: "Integration مع API",
+                      details: "استدعاء POST /api/auth/logout (اختياري)",
+                      tags: ["api"],
+                    },
+                    {
+                      id: "logout-fe-3",
+                      text: "Redirect للـ Login",
+                      details: "توجيه المستخدم لصفحة تسجيل الدخول",
+                      tags: ["ui", "required"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "logout-be-1",
+                      text: "إنشاء Logout Endpoint",
+                      details: "POST /api/auth/logout (محمي)",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/auth/logout",
+                      },
+                    },
+                    {
+                      id: "logout-be-2",
+                      text: "زيادة tokenVersion",
+                      details: "إلغاء كل الـ refresh tokens للمستخدم",
+                      tags: ["security"],
+                    },
+                    {
+                      id: "logout-be-3",
+                      text: "إضافة Audit Log",
+                      details: "تسجيل حدث USER_LOGOUT",
+                      tags: ["security", "optional"],
+                    },
+                  ],
+                },
+              },
+              {
+                id: "protected-routes",
+                icon: "🛡️",
+                name: "Protected Routes",
+                nameAr: "حماية المسارات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "protected-fe-1",
+                      text: "إنشاء ProtectedRoute Component",
+                      details: "component يتحقق من وجود user قبل عرض المحتوى",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "protected-fe-2",
+                      text: "إضافة Role-based Access",
+                      details: "التحقق من user.type لصفحات معينة",
+                      tags: ["security"],
+                    },
+                    {
+                      id: "protected-fe-3",
+                      text: "Redirect للـ Unauthorized",
+                      details: "صفحة 403 للمستخدمين بدون صلاحية",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "protected-be-1",
+                      text: "إنشاء Auth Middleware",
+                      details: "middleware يتحقق من الـ JWT في كل request محمي",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "protected-be-2",
+                      text: "إضافة Permission Middleware",
+                      details: "middleware للتحقق من صلاحيات المستخدم",
+                      tags: ["security"],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 2: USER MANAGEMENT ====================
+          {
+            id: "users",
+            icon: "👥",
+            name: "User Management",
+            nameAr: "إدارة المستخدمين",
+            description:
+              "إدارة المستخدمين: OWNER يمكنه إضافة STAFF، وتحديد صلاحياتهم على كل صفحة",
+            subFeatures: [
+              {
+                id: "staff-crud",
+                icon: "👨‍💼",
+                name: "Staff CRUD",
+                nameAr: "إدارة الموظفين",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "staff-fe-1",
+                      text: "صفحة قائمة الموظفين",
+                      details: "عرض جدول بكل الـ staff مع البحث والفلترة",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "staff-fe-2",
+                      text: "Modal إضافة موظف جديد",
+                      details:
+                        "form: email, password, name مع اختيار الصلاحيات",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "staff-fe-3",
+                      text: "Modal تعديل موظف",
+                      details: "تعديل البيانات والصلاحيات",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "staff-fe-4",
+                      text: "حذف/إيقاف موظف",
+                      details:
+                        "confirmation dialog قبل الحذف أو تغيير الـ status",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "staff-be-1",
+                      text: "GET /api/users - قائمة الموظفين",
+                      details: "جلب staff للـ OWNER الحالي (parentUserId)",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "GET", endpoint: "/api/users" },
+                    },
+                    {
+                      id: "staff-be-2",
+                      text: "POST /api/users - إضافة موظف",
+                      details:
+                        "إنشاء user بـ type: STAFF و parentUserId = current user",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "POST", endpoint: "/api/users" },
+                    },
+                    {
+                      id: "staff-be-3",
+                      text: "PUT /api/users/:id - تعديل موظف",
+                      details: "تحديث بيانات الموظف",
+                      tags: ["api"],
+                      apiDetails: { method: "PUT", endpoint: "/api/users/:id" },
+                    },
+                    {
+                      id: "staff-be-4",
+                      text: "DELETE /api/users/:id - حذف موظف",
+                      details: "حذف أو soft delete",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "DELETE",
+                        endpoint: "/api/users/:id",
+                      },
+                    },
+                  ],
+                },
+                notes: [
+                  "الـ OWNER فقط يمكنه إدارة الـ STAFF",
+                  "الـ STAFF يرتبط بـ parentUserId = OWNER",
+                  "عند حذف OWNER، الـ STAFF يصبح parentUserId = null",
+                ],
+              },
+              {
+                id: "permissions",
+                icon: "🔒",
+                name: "Permissions System",
+                nameAr: "نظام الصلاحيات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "perm-fe-1",
+                      text: "جدول الصلاحيات في إضافة/تعديل الموظف",
+                      details:
+                        "checkboxes لكل page: canRead, canCreate, canUpdate, canDelete",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "perm-fe-2",
+                      text: "إخفاء العناصر بناءً على الصلاحيات",
+                      details: "component يتحقق من الصلاحية قبل عرض أي element",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "perm-fe-3",
+                      text: "Permission Hook",
+                      details: "usePermission(page, action) hook",
+                      tags: ["required"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "perm-be-1",
+                      text: "حفظ الصلاحيات مع الـ User",
+                      details: "UserPermission records لكل page",
+                      tags: ["db", "required"],
+                    },
+                    {
+                      id: "perm-be-2",
+                      text: "Permission Middleware",
+                      details: "middleware للتحقق من الصلاحية قبل كل action",
+                      tags: ["security", "required"],
+                    },
+                    {
+                      id: "perm-be-3",
+                      text: "إرجاع الصلاحيات في GET /api/auth/me",
+                      details: "إضافة permissions للـ response",
+                      tags: ["api"],
+                    },
+                  ],
+                },
+                notes: [
+                  "الـ OWNER له كل الصلاحيات تلقائياً",
+                  "الـ STAFF يحتاج صلاحيات محددة لكل page",
+                  "Pages: INTEGRATION, RECEIVERS, PAYMENT_LINKS, REVIEW, PAYMENTS, CUSTOMERS, USERS, SETTINGS, LOGS, DEVICES",
+                ],
+              },
+            ],
+          },
+
+          // ==================== FEATURE 3: PLANS & SUBSCRIPTIONS ====================
+          {
+            id: "plans",
+            icon: "💎",
+            name: "Plans & Subscriptions",
+            nameAr: "الباقات والاشتراكات",
+            description:
+              "إدارة باقات الاشتراك: كل باقة لها حدود معينة (أجهزة، مستخدمين، الخ)",
+            subFeatures: [
+              {
+                id: "plans-management",
+                icon: "📋",
+                name: "Plans Management",
+                nameAr: "إدارة الباقات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "plans-fe-1",
+                      text: "صفحة عرض الباقات",
+                      details: "عرض كل الباقات المتاحة مع الأسعار والمميزات",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "plans-fe-2",
+                      text: "مقارنة الباقات",
+                      details: "جدول مقارنة بين الباقات",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "plans-be-1",
+                      text: "GET /api/plans - قائمة الباقات",
+                      details: "جلب الباقات المفعلة مع الـ limits",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "GET", endpoint: "/api/plans" },
+                    },
+                    {
+                      id: "plans-be-2",
+                      text: "Seed للباقات الافتراضية",
+                      details: "إنشاء باقات: Basic, Pro, Enterprise",
+                      tags: ["db", "required"],
+                    },
+                  ],
+                },
+              },
+              {
+                id: "subscription-management",
+                icon: "📅",
+                name: "Subscription Management",
+                nameAr: "إدارة الاشتراكات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "sub-fe-1",
+                      text: "صفحة الاشتراك الحالي",
+                      details:
+                        "عرض تفاصيل الاشتراك: الباقة، تاريخ الانتهاء، الإضافات",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "sub-fe-2",
+                      text: "ترقية/تخفيض الباقة",
+                      details: "اختيار باقة جديدة والدفع",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "sub-fe-3",
+                      text: "شراء إضافات",
+                      details: "إضافة أجهزة، مستخدمين، الخ",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "sub-be-1",
+                      text: "GET /api/subscriptions/current",
+                      details: "جلب الاشتراك الحالي للمستخدم",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/subscriptions/current",
+                      },
+                    },
+                    {
+                      id: "sub-be-2",
+                      text: "POST /api/subscriptions",
+                      details: "إنشاء اشتراك جديد",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/subscriptions",
+                      },
+                    },
+                    {
+                      id: "sub-be-3",
+                      text: "التحقق من الحدود",
+                      details: "middleware للتحقق من حدود الباقة قبل أي عملية",
+                      tags: ["security", "required"],
+                    },
+                  ],
+                },
+                notes: [
+                  "كل OWNER لازم يكون عنده subscription",
+                  "الحدود: maxPaymentsPerMonth, maxDevices, maxReceivers, maxStaffUsers, maxApiKeys, maxWebhooks",
+                  "-1 = unlimited",
+                ],
+              },
+            ],
+          },
+
+          // ==================== FEATURE 4: ACCOUNT RECEIVERS ====================
+          {
+            id: "receivers",
+            icon: "🏦",
+            name: "Account Receivers",
+            nameAr: "حسابات الاستقبال",
+            description:
+              "إدارة حسابات InstaPay التي يستقبل عليها التاجر المدفوعات",
+            subFeatures: [
+              {
+                id: "receivers-crud",
+                icon: "📱",
+                name: "Receivers CRUD",
+                nameAr: "إدارة حسابات الاستقبال",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "recv-fe-1",
+                      text: "صفحة قائمة الحسابات",
+                      details: "عرض كل حسابات الاستقبال مع IPA و الاسم",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "recv-fe-2",
+                      text: "Modal إضافة حساب",
+                      details: "form: receiverIpa, displayName",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "recv-fe-3",
+                      text: "تعيين حساب افتراضي",
+                      details: "زر لجعل حساب هو الـ default",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "recv-fe-4",
+                      text: "تفعيل/إيقاف حساب",
+                      details: "toggle للـ isActive",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "recv-be-1",
+                      text: "GET /api/receivers",
+                      details: "جلب حسابات المستخدم الحالي",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "GET", endpoint: "/api/receivers" },
+                    },
+                    {
+                      id: "recv-be-2",
+                      text: "POST /api/receivers",
+                      details: "إضافة حساب جديد (مع التحقق من الحد)",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/receivers",
+                      },
+                    },
+                    {
+                      id: "recv-be-3",
+                      text: "PUT /api/receivers/:id",
+                      details: "تعديل حساب",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "PUT",
+                        endpoint: "/api/receivers/:id",
+                      },
+                    },
+                    {
+                      id: "recv-be-4",
+                      text: "DELETE /api/receivers/:id",
+                      details: "حذف حساب (إذا لم يكن مرتبط بـ payments)",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "DELETE",
+                        endpoint: "/api/receivers/:id",
+                      },
+                    },
+                  ],
+                },
+                notes: [
+                  "الـ receiverIpa يجب أن يكون unique لكل user",
+                  "لا يمكن حذف حساب مرتبط بـ PaymentIntents",
+                  "حساب واحد فقط يمكن أن يكون isDefault = true",
+                ],
+              },
+            ],
+          },
+
+          // ==================== FEATURE 5: DEVICES ====================
+          {
+            id: "devices",
+            icon: "📱",
+            name: "Devices Management",
+            nameAr: "إدارة الأجهزة",
+            description: "إدارة الأجهزة المسجلة التي ترسل إشعارات InstaPay",
+            subFeatures: [
+              {
+                id: "devices-crud",
+                icon: "📲",
+                name: "Devices CRUD",
+                nameAr: "إدارة الأجهزة",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "dev-fe-1",
+                      text: "صفحة قائمة الأجهزة",
+                      details:
+                        "عرض الأجهزة المسجلة مع deviceName, deviceModel, lastSeenAt",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "dev-fe-2",
+                      text: "تفعيل/إيقاف جهاز",
+                      details: "toggle للـ isActive",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "dev-fe-3",
+                      text: "حذف جهاز",
+                      details: "حذف جهاز مع confirmation",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "dev-be-1",
+                      text: "GET /api/devices",
+                      details: "جلب أجهزة المستخدم",
+                      tags: ["api", "required"],
+                      apiDetails: { method: "GET", endpoint: "/api/devices" },
+                    },
+                    {
+                      id: "dev-be-2",
+                      text: "POST /api/devices/register",
+                      details: "تسجيل جهاز جديد (من التطبيق)",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/devices/register",
+                      },
+                    },
+                    {
+                      id: "dev-be-3",
+                      text: "DELETE /api/devices/:id",
+                      details: "حذف جهاز",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "DELETE",
+                        endpoint: "/api/devices/:id",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 6: PAYMENT INTENTS ====================
+          {
+            id: "payments",
+            icon: "💳",
+            name: "Payment Intents",
+            nameAr: "طلبات الدفع",
+            description: "إنشاء وإدارة طلبات الدفع، والمطابقة مع الإشعارات",
+            subFeatures: [
+              {
+                id: "intents-crud",
+                icon: "📝",
+                name: "Payment Intents CRUD",
+                nameAr: "إدارة طلبات الدفع",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "pi-fe-1",
+                      text: "صفحة قائمة طلبات الدفع",
+                      details: "جدول بكل الـ intents مع الفلترة والبحث",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "pi-fe-2",
+                      text: "Modal إنشاء طلب دفع",
+                      details:
+                        "form: amount, reference, description, expiresAt, receiverId",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "pi-fe-3",
+                      text: "تفاصيل طلب الدفع",
+                      details: "صفحة/modal تعرض كل التفاصيل والـ timeline",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "pi-fe-4",
+                      text: "Payment Link",
+                      details: "رابط للعميل لعرض تفاصيل الدفع",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "pi-fe-5",
+                      text: "إلغاء طلب دفع",
+                      details: "زر لإلغاء intent مع سبب",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "pi-be-1",
+                      text: "GET /api/payment-intents",
+                      details: "جلب طلبات الدفع مع pagination و filtering",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/payment-intents",
+                      },
+                    },
+                    {
+                      id: "pi-be-2",
+                      text: "POST /api/payment-intents",
+                      details: "إنشاء طلب دفع جديد",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/payment-intents",
+                      },
+                    },
+                    {
+                      id: "pi-be-3",
+                      text: "GET /api/payment-intents/:id",
+                      details: "جلب تفاصيل طلب دفع",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/payment-intents/:id",
+                      },
+                    },
+                    {
+                      id: "pi-be-4",
+                      text: "POST /api/payment-intents/:id/cancel",
+                      details: "إلغاء طلب دفع",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/payment-intents/:id/cancel",
+                      },
+                    },
+                    {
+                      id: "pi-be-5",
+                      text: "GET /api/p/:publicId (Public)",
+                      details: "صفحة الدفع العامة للعميل",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/p/:publicId",
+                      },
+                    },
+                  ],
+                },
+                notes: [
+                  "publicId يختلف عن id للأمان",
+                  "الـ status: PENDING, PAID, REVIEW_REQUIRED, CANCELLED, EXPIRED, REVOKED",
+                  "الـ expiresAt يجب أن يكون في المستقبل",
+                ],
+              },
+              {
+                id: "matching",
+                icon: "🔗",
+                name: "Auto Matching",
+                nameAr: "المطابقة التلقائية",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "match-fe-1",
+                      text: "صفحة المراجعة (Review)",
+                      details: "عرض الـ intents التي تحتاج مراجعة يدوية",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "match-fe-2",
+                      text: "المطابقة اليدوية",
+                      details: "اختيار notification لمطابقتها مع intent",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "match-be-1",
+                      text: "Matching Algorithm",
+                      details: "مطابقة تلقائية بناءً على amount, receiverIpa",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "match-be-2",
+                      text: "POST /api/payment-intents/:id/confirm",
+                      details: "تأكيد الدفع يدوياً",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/payment-intents/:id/confirm",
+                      },
+                    },
+                    {
+                      id: "match-be-3",
+                      text: "Confidence Score",
+                      details: "حساب نسبة الثقة في المطابقة",
+                      tags: ["optional"],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 7: NOTIFICATIONS ====================
+          {
+            id: "notifications",
+            icon: "🔔",
+            name: "Notifications",
+            nameAr: "الإشعارات",
+            description: "استقبال ومعالجة إشعارات InstaPay من الأجهزة",
+            subFeatures: [
+              {
+                id: "notifications-receive",
+                icon: "📥",
+                name: "Receive Notifications",
+                nameAr: "استقبال الإشعارات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "notif-fe-1",
+                      text: "صفحة سجل الإشعارات",
+                      details: "عرض كل الإشعارات المستقبلة مع التفاصيل",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "notif-be-1",
+                      text: "POST /api/notifications",
+                      details: "استقبال إشعار من الجهاز",
+                      tags: ["api", "required"],
+                      apiDetails: {
+                        method: "POST",
+                        endpoint: "/api/notifications",
+                      },
+                    },
+                    {
+                      id: "notif-be-2",
+                      text: "Parser للإشعارات",
+                      details:
+                        "استخراج amount, senderIpa, senderName من rawText",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "notif-be-3",
+                      text: "Deduplication",
+                      details: "منع تكرار الإشعارات باستخدام dedupeKey",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "notif-be-4",
+                      text: "تشغيل Matching بعد الاستقبال",
+                      details: "محاولة مطابقة الإشعار مع intent تلقائياً",
+                      tags: ["required"],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 8: CUSTOMERS ====================
+          {
+            id: "customers",
+            icon: "👤",
+            name: "Customers",
+            nameAr: "العملاء",
+            description: "إدارة بيانات العملاء الذين يدفعون",
+            subFeatures: [
+              {
+                id: "customers-crud",
+                icon: "📇",
+                name: "Customers CRUD",
+                nameAr: "إدارة العملاء",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "cust-fe-1",
+                      text: "صفحة قائمة العملاء",
+                      details: "جدول بالعملاء مع البحث",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "cust-fe-2",
+                      text: "تفاصيل العميل",
+                      details: "عرض بيانات العميل وتاريخ مدفوعاته",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "cust-be-1",
+                      text: "GET /api/customers",
+                      details: "جلب قائمة العملاء",
+                      tags: ["api"],
+                      apiDetails: { method: "GET", endpoint: "/api/customers" },
+                    },
+                    {
+                      id: "cust-be-2",
+                      text: "Auto-create Customer",
+                      details: "إنشاء customer تلقائياً عند أول دفعة من IPA",
+                      tags: ["optional"],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 9: API KEYS ====================
+          {
+            id: "api-keys",
+            icon: "🔑",
+            name: "API Keys",
+            nameAr: "مفاتيح API",
+            description: "إدارة مفاتيح API للتكامل مع الأنظمة الخارجية",
+            subFeatures: [
+              {
+                id: "apikeys-crud",
+                icon: "🗝️",
+                name: "API Keys CRUD",
+                nameAr: "إدارة المفاتيح",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "apikey-fe-1",
+                      text: "صفحة مفاتيح API",
+                      details: "عرض المفاتيح مع keyPrefix فقط",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "apikey-fe-2",
+                      text: "إنشاء مفتاح جديد",
+                      details: "form: name, scopes, expiresAt",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "apikey-fe-3",
+                      text: "عرض المفتاح مرة واحدة",
+                      details: "عرض المفتاح الكامل بعد الإنشاء فقط",
+                      tags: ["ui", "security"],
+                    },
+                    {
+                      id: "apikey-fe-4",
+                      text: "إلغاء مفتاح",
+                      details: "revoke مع confirmation",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "apikey-be-1",
+                      text: "GET /api/api-keys",
+                      details: "جلب مفاتيح المستخدم",
+                      tags: ["api"],
+                      apiDetails: { method: "GET", endpoint: "/api/api-keys" },
+                    },
+                    {
+                      id: "apikey-be-2",
+                      text: "POST /api/api-keys",
+                      details: "إنشاء مفتاح جديد (يُرجع المفتاح مرة واحدة)",
+                      tags: ["api"],
+                      apiDetails: { method: "POST", endpoint: "/api/api-keys" },
+                    },
+                    {
+                      id: "apikey-be-3",
+                      text: "DELETE /api/api-keys/:id",
+                      details: "إلغاء مفتاح",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "DELETE",
+                        endpoint: "/api/api-keys/:id",
+                      },
+                    },
+                    {
+                      id: "apikey-be-4",
+                      text: "API Key Authentication Middleware",
+                      details: "التحقق من الـ API key في الـ header",
+                      tags: ["security", "required"],
+                    },
+                  ],
+                },
+                notes: [
+                  "المفتاح يُعرض مرة واحدة فقط بعد الإنشاء",
+                  "نخزن فقط الـ hash في DB",
+                  "الـ scopes تحدد الصلاحيات: intents:read, intents:write, etc.",
+                ],
+              },
+            ],
+          },
+
+          // ==================== FEATURE 10: WEBHOOKS ====================
+          {
+            id: "webhooks",
+            icon: "🪝",
+            name: "Webhooks",
+            nameAr: "Webhooks",
+            description: "إرسال إشعارات للأنظمة الخارجية عند حدوث أحداث معينة",
+            subFeatures: [
+              {
+                id: "webhooks-crud",
+                icon: "🔗",
+                name: "Webhook Endpoints",
+                nameAr: "إدارة Webhooks",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "wh-fe-1",
+                      text: "صفحة Webhooks",
+                      details: "عرض الـ endpoints المسجلة",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "wh-fe-2",
+                      text: "إضافة Webhook",
+                      details: "form: url, events, secret",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "wh-fe-3",
+                      text: "سجل التسليمات",
+                      details: "عرض محاولات الإرسال لكل webhook",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "wh-be-1",
+                      text: "CRUD Endpoints للـ Webhooks",
+                      details: "GET, POST, PUT, DELETE /api/webhooks",
+                      tags: ["api"],
+                      apiDetails: { method: "GET", endpoint: "/api/webhooks" },
+                    },
+                    {
+                      id: "wh-be-2",
+                      text: "Webhook Dispatcher",
+                      details: "إرسال الأحداث للـ endpoints المسجلة",
+                      tags: ["required"],
+                    },
+                    {
+                      id: "wh-be-3",
+                      text: "Retry Logic",
+                      details: "إعادة المحاولة عند الفشل (exponential backoff)",
+                      tags: ["optional"],
+                    },
+                    {
+                      id: "wh-be-4",
+                      text: "Signature Generation",
+                      details: "توقيع الـ payload بالـ secret",
+                      tags: ["security"],
+                    },
+                  ],
+                },
+                notes: [
+                  "الأحداث: payment.confirmed, payment.expired, payment.cancelled",
+                  "الـ signature للتحقق من صحة المصدر",
+                ],
+              },
+            ],
+          },
+
+          // ==================== FEATURE 11: AUDIT LOGS ====================
+          {
+            id: "audit-logs",
+            icon: "📜",
+            name: "Audit Logs",
+            nameAr: "سجلات المراجعة",
+            description: "تسجيل كل العمليات للمراجعة والأمان",
+            subFeatures: [
+              {
+                id: "logs-view",
+                icon: "📋",
+                name: "View Logs",
+                nameAr: "عرض السجلات",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "log-fe-1",
+                      text: "صفحة سجلات المراجعة",
+                      details: "جدول بالسجلات مع فلترة بالتاريخ والنوع",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "log-fe-2",
+                      text: "تفاصيل السجل",
+                      details: "عرض beforeJson و afterJson",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "log-be-1",
+                      text: "GET /api/audit-logs",
+                      details: "جلب السجلات مع filtering",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/audit-logs",
+                      },
+                    },
+                    {
+                      id: "log-be-2",
+                      text: "Audit Logger Service",
+                      details: "service لتسجيل الأحداث من أي مكان",
+                      tags: ["required"],
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 12: SETTINGS ====================
+          {
+            id: "settings",
+            icon: "⚙️",
+            name: "Settings",
+            nameAr: "الإعدادات",
+            description: "إعدادات الحساب والتفضيلات",
+            subFeatures: [
+              {
+                id: "profile-settings",
+                icon: "👤",
+                name: "Profile Settings",
+                nameAr: "إعدادات الملف الشخصي",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "set-fe-1",
+                      text: "صفحة الإعدادات",
+                      details: "تعديل الاسم، البريد، كلمة المرور",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "set-fe-2",
+                      text: "إعدادات الإشعارات",
+                      details: "تفضيلات استقبال الإشعارات",
+                      tags: ["ui", "optional"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "set-be-1",
+                      text: "PUT /api/users/me",
+                      details: "تحديث بيانات المستخدم الحالي",
+                      tags: ["api"],
+                      apiDetails: { method: "PUT", endpoint: "/api/users/me" },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 13: DASHBOARD ====================
+          {
+            id: "dashboard",
+            icon: "📊",
+            name: "Dashboard",
+            nameAr: "لوحة التحكم",
+            description: "لوحة التحكم الرئيسية مع الإحصائيات",
+            subFeatures: [
+              {
+                id: "dashboard-main",
+                icon: "📈",
+                name: "Main Dashboard",
+                nameAr: "لوحة التحكم الرئيسية",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "dash-fe-1",
+                      text: "تصميم Dashboard Layout",
+                      details: "sidebar, header, main content area",
+                      tags: ["ui", "required"],
+                    },
+                    {
+                      id: "dash-fe-2",
+                      text: "بطاقات الإحصائيات",
+                      details: "إجمالي المدفوعات، الأجهزة، الخ",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "dash-fe-3",
+                      text: "رسوم بيانية",
+                      details: "مخطط للمدفوعات عبر الزمن",
+                      tags: ["ui", "optional"],
+                    },
+                    {
+                      id: "dash-fe-4",
+                      text: "آخر العمليات",
+                      details: "قائمة بآخر الدفعات والإشعارات",
+                      tags: ["ui"],
+                    },
+                  ],
+                  backend: [
+                    {
+                      id: "dash-be-1",
+                      text: "GET /api/dashboard/stats",
+                      details: "إحصائيات للـ dashboard",
+                      tags: ["api"],
+                      apiDetails: {
+                        method: "GET",
+                        endpoint: "/api/dashboard/stats",
+                      },
+                    },
+                  ],
+                },
+              },
+            ],
+          },
+
+          // ==================== FEATURE 14: LANDING PAGE (LAST) ====================
+          {
+            id: "landing",
+            icon: "🏠",
+            name: "Landing Page",
+            nameAr: "الصفحة الرئيسية",
+            description: "الصفحة الرئيسية للموقع - التعريف بالخدمة والباقات",
+            subFeatures: [
+              {
+                id: "landing-main",
+                icon: "🎨",
+                name: "Landing Page Design",
+                nameAr: "تصميم الصفحة الرئيسية",
+                tasks: {
+                  frontend: [
+                    {
+                      id: "land-fe-1",
+                      text: "Hero Section",
+                      details: "العنوان الرئيسي مع CTA",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "land-fe-2",
+                      text: "Features Section",
+                      details: "عرض مميزات الخدمة",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "land-fe-3",
+                      text: "Pricing Section",
+                      details: "عرض الباقات والأسعار",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "land-fe-4",
+                      text: "FAQ Section",
+                      details: "الأسئلة الشائعة",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "land-fe-5",
+                      text: "Footer",
+                      details: "روابط ومعلومات التواصل",
+                      tags: ["ui"],
+                    },
+                    {
+                      id: "land-fe-6",
+                      text: "Responsive Design",
+                      details: "التوافق مع الموبايل",
+                      tags: ["ui", "required"],
+                    },
+                  ],
+                  backend: [],
+                },
+              },
+            ],
+          },
+        ],
+      };
+
+      // ============================================================================
+      // LOCAL STORAGE MANAGER
+      // ============================================================================
+      const STORAGE_KEY = "instaflow_roadmap_tasks";
+
+      function getTasksState() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved ? JSON.parse(saved) : {};
+      }
+
+      function saveTaskState(taskId, completed) {
+        const state = getTasksState();
+        state[taskId] = completed;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function isTaskCompleted(taskId) {
+        const state = getTasksState();
+        return state[taskId] === true;
+      }
+
+      function resetAllTasks() {
+        if (confirm("هل أنت متأكد من إعادة تعيين كل المهام؟")) {
+          localStorage.removeItem(STORAGE_KEY);
+          renderFeatures();
+          updateProgress();
+          showToast("تم إعادة تعيين كل المهام", "warning");
+        }
+      }
+
+      // ============================================================================
+      // RENDER FUNCTIONS
+      // ============================================================================
+      function renderFeatures() {
+        const container = document.getElementById("features-container");
+        container.innerHTML = "";
+
+        projectData.features.forEach((feature) => {
+          const featureEl = createFeatureElement(feature);
+          container.appendChild(featureEl);
+        });
+
+        // Attach event listeners
+        attachTaskListeners();
+        attachToggleListeners();
+      }
+
+      function createFeatureElement(feature) {
+        const completedTasks = countCompletedTasksInFeature(feature);
+        const totalTasks = countTotalTasksInFeature(feature);
+        const progressPercent =
+          totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        const div = document.createElement("div");
+        div.className = "feature-section";
+        div.id = `feature-${feature.id}`;
+
+        div.innerHTML = `
+          <div class="feature-header" data-feature="${feature.id}">
+            <div class="feature-title">
+              <span class="feature-icon">${feature.icon}</span>
+              <div>
+                <h2 class="feature-name">${feature.name}</h2>
+                <div class="feature-name-ar">${feature.nameAr}</div>
+              </div>
+            </div>
+            <div class="feature-meta">
+              <div class="feature-progress">
+                <div class="feature-progress-bar">
+                  <div class="feature-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <span class="feature-progress-text">${completedTasks}/${totalTasks}</span>
+              </div>
+              <span class="feature-toggle">▼</span>
+            </div>
+          </div>
+          <div class="feature-content">
+            <div class="feature-description">
+              <p>${feature.description}</p>
+            </div>
+            ${feature.subFeatures.map((sub) => createSubFeatureHTML(sub)).join("")}
+          </div>
+        `;
+
+        return div;
+      }
+
+      function createSubFeatureHTML(subFeature) {
+        const completedTasks = countCompletedTasksInSubFeature(subFeature);
+        const totalTasks = countTotalTasksInSubFeature(subFeature);
+        const progressPercent =
+          totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        let tasksHTML = '<div class="task-groups">';
+
+        if (subFeature.tasks.frontend && subFeature.tasks.frontend.length > 0) {
+          tasksHTML += `
+            <div class="task-group frontend">
+              <div class="task-group-header">
+                <span class="task-group-icon">🎨</span>
+                <span class="task-group-title">Frontend</span>
+              </div>
+              <ul class="task-list">
+                ${subFeature.tasks.frontend.map((task) => createTaskHTML(task)).join("")}
+              </ul>
+            </div>
+          `;
+        }
+
+        if (subFeature.tasks.backend && subFeature.tasks.backend.length > 0) {
+          tasksHTML += `
+            <div class="task-group backend">
+              <div class="task-group-header">
+                <span class="task-group-icon">⚙️</span>
+                <span class="task-group-title">Backend</span>
+              </div>
+              <ul class="task-list">
+                ${subFeature.tasks.backend.map((task) => createTaskHTML(task)).join("")}
+              </ul>
+            </div>
+          `;
+        }
+
+        tasksHTML += "</div>";
+
+        // Notes section
+        let notesHTML = "";
+        if (subFeature.notes && subFeature.notes.length > 0) {
+          notesHTML = `
+            <div class="notes-section">
+              <h5>💡 ملاحظات مهمة</h5>
+              <ul>
+                ${subFeature.notes.map((note) => `<li>${note}</li>`).join("")}
+              </ul>
+            </div>
+          `;
+        }
+
+        return `
+          <div class="sub-feature" id="sub-${subFeature.id}">
+            <div class="sub-feature-header" data-subfeature="${subFeature.id}">
+              <div class="sub-feature-title">
+                <span class="sub-feature-icon">${subFeature.icon}</span>
+                <span class="sub-feature-name">${subFeature.name}</span>
+                <span class="sub-feature-name-ar">(${subFeature.nameAr})</span>
+              </div>
+              <div class="sub-feature-progress">
+                <div class="sub-feature-progress-bar">
+                  <div class="sub-feature-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <span class="feature-progress-text">${completedTasks}/${totalTasks}</span>
+                <span class="sub-feature-toggle">▼</span>
+              </div>
+            </div>
+            <div class="sub-feature-content">
+              ${tasksHTML}
+              ${notesHTML}
+            </div>
+          </div>
+        `;
+      }
+
+      function createTaskHTML(task) {
+        const completed = isTaskCompleted(task.id);
+        const completedClass = completed ? "completed" : "";
+
+        let tagsHTML = "";
+        if (task.tags && task.tags.length > 0) {
+          tagsHTML = `<div class="task-tags">${task.tags.map((tag) => `<span class="task-tag ${tag}">${tag}</span>`).join("")}</div>`;
+        }
+
+        let apiDetailsHTML = "";
+        if (task.apiDetails) {
+          apiDetailsHTML = `
+            <div class="api-details">
+              <span class="api-method ${task.apiDetails.method.toLowerCase()}">${task.apiDetails.method}</span>
+              <span class="api-endpoint">${task.apiDetails.endpoint}</span>
+            </div>
+          `;
+        }
+
+        return `
+          <li class="task-item ${completedClass}" data-task-id="${task.id}" data-type="${task.tags && task.tags.includes("api") ? "backend" : "frontend"}">
+            <div class="task-checkbox">
+              <span class="checkmark">✓</span>
+            </div>
+            <div class="task-content">
+              <div class="task-text">${task.text}</div>
+              <div class="task-details">${task.details}</div>
+              ${tagsHTML}
+              ${apiDetailsHTML}
+            </div>
+          </li>
+        `;
+      }
+
+      // ============================================================================
+      // EVENT LISTENERS
+      // ============================================================================
+      function attachTaskListeners() {
+        document.querySelectorAll(".task-item").forEach((item) => {
+          item.addEventListener("click", function () {
+            const taskId = this.dataset.taskId;
+            const isCompleted = this.classList.contains("completed");
+
+            // Toggle state
+            this.classList.toggle("completed");
+            saveTaskState(taskId, !isCompleted);
+
+            // Update progress
+            updateProgress();
+
+            // Show toast
+            showToast(
+              !isCompleted ? "تم إكمال المهمة ✓" : "تم إلغاء إكمال المهمة",
+              !isCompleted ? "success" : "warning",
+            );
+          });
+        });
+      }
+
+      function attachToggleListeners() {
+        // Feature toggle
+        document.querySelectorAll(".feature-header").forEach((header) => {
+          header.addEventListener("click", function () {
+            const featureSection = this.closest(".feature-section");
+            featureSection.classList.toggle("collapsed");
+          });
+        });
+
+        // Sub-feature toggle
+        document.querySelectorAll(".sub-feature-header").forEach((header) => {
+          header.addEventListener("click", function () {
+            const subFeature = this.closest(".sub-feature");
+            subFeature.classList.toggle("collapsed");
+          });
+        });
+      }
+
+      // ============================================================================
+      // PROGRESS CALCULATION
+      // ============================================================================
+      function countTotalTasksInFeature(feature) {
+        return feature.subFeatures.reduce(
+          (sum, sub) => sum + countTotalTasksInSubFeature(sub),
+          0,
+        );
+      }
+
+      function countCompletedTasksInFeature(feature) {
+        return feature.subFeatures.reduce(
+          (sum, sub) => sum + countCompletedTasksInSubFeature(sub),
+          0,
+        );
+      }
+
+      function countTotalTasksInSubFeature(sub) {
+        return (
+          (sub.tasks.frontend?.length || 0) + (sub.tasks.backend?.length || 0)
+        );
+      }
+
+      function countCompletedTasksInSubFeature(sub) {
+        let count = 0;
+        if (sub.tasks.frontend) {
+          count += sub.tasks.frontend.filter((t) =>
+            isTaskCompleted(t.id),
+          ).length;
+        }
+        if (sub.tasks.backend) {
+          count += sub.tasks.backend.filter((t) =>
+            isTaskCompleted(t.id),
+          ).length;
+        }
+        return count;
+      }
+
+      function updateProgress() {
+        let totalTasks = 0;
+        let completedTasks = 0;
+
+        projectData.features.forEach((feature) => {
+          totalTasks += countTotalTasksInFeature(feature);
+          completedTasks += countCompletedTasksInFeature(feature);
+        });
+
+        const percentage =
+          totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+        // Update UI
+        document.getElementById("completed-count").textContent = completedTasks;
+        document.getElementById("pending-count").textContent =
+          totalTasks - completedTasks;
+        document.getElementById("total-count").textContent = totalTasks;
+        document.getElementById("total-progress").style.width =
+          percentage + "%";
+        document.getElementById("progress-percentage").textContent =
+          percentage + "%";
+
+        // Update feature progress bars
+        projectData.features.forEach((feature) => {
+          const featureEl = document.getElementById(`feature-${feature.id}`);
+          if (featureEl) {
+            const completed = countCompletedTasksInFeature(feature);
+            const total = countTotalTasksInFeature(feature);
+            const percent =
+              total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            const progressFill = featureEl.querySelector(
+              ".feature-progress-fill",
+            );
+            const progressText = featureEl.querySelector(
+              ".feature-progress-text",
+            );
+            if (progressFill) progressFill.style.width = percent + "%";
+            if (progressText)
+              progressText.textContent = `${completed}/${total}`;
+          }
+        });
+      }
+
+      // ============================================================================
+      // FILTER & SEARCH
+      // ============================================================================
+      let currentFilter = "all";
+
+      function applyFilter(filter) {
+        currentFilter = filter;
+
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.toggle("active", btn.dataset.filter === filter);
+        });
+
+        document.querySelectorAll(".task-item").forEach((item) => {
+          const isCompleted = item.classList.contains("completed");
+          const taskType = item.dataset.type;
+
+          let show = true;
+
+          switch (filter) {
+            case "completed":
+              show = isCompleted;
+              break;
+            case "pending":
+              show = !isCompleted;
+              break;
+            case "frontend":
+              show = taskType === "frontend";
+              break;
+            case "backend":
+              show = taskType === "backend";
+              break;
+          }
+
+          item.classList.toggle("hidden", !show);
+        });
+      }
+
+      function applySearch(query) {
+        const lowerQuery = query.toLowerCase();
+
+        document.querySelectorAll(".task-item").forEach((item) => {
+          const text = item
+            .querySelector(".task-text")
+            .textContent.toLowerCase();
+          const details = item
+            .querySelector(".task-details")
+            .textContent.toLowerCase();
+
+          const matches =
+            text.includes(lowerQuery) || details.includes(lowerQuery);
+          item.classList.toggle("hidden", !matches && query.length > 0);
+        });
+      }
+
+      // ============================================================================
+      // EXPORT FUNCTION
+      // ============================================================================
+      function exportProgress() {
+        const state = getTasksState();
+        const data = {
+          exportDate: new Date().toISOString(),
+          projectName: "InstaFlow",
+          tasks: state,
+          stats: {
+            total: document.getElementById("total-count").textContent,
+            completed: document.getElementById("completed-count").textContent,
+            pending: document.getElementById("pending-count").textContent,
+          },
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], {
+          type: "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `instaflow-roadmap-${new Date().toISOString().split("T")[0]}.json`;
+        a.click();
+
+        showToast("تم تصدير التقدم بنجاح", "success");
+      }
+
+      // ============================================================================
+      // TOAST NOTIFICATION
+      // ============================================================================
+      function showToast(message, type = "success") {
+        const toast = document.getElementById("toast");
+        const toastMessage = document.getElementById("toast-message");
+        const toastIcon = document.getElementById("toast-icon");
+
+        toastMessage.textContent = message;
+        toastIcon.textContent = type === "success" ? "✅" : "⚠️";
+
+        toast.className = `toast show ${type}`;
+
+        setTimeout(() => {
+          toast.classList.remove("show");
+        }, 2500);
+      }
+
+      // ============================================================================
+      // COLLAPSE ALL
+      // ============================================================================
+      let allCollapsed = false;
+
+      function toggleCollapseAll() {
+        allCollapsed = !allCollapsed;
+
+        document.querySelectorAll(".feature-section").forEach((section) => {
+          section.classList.toggle("collapsed", allCollapsed);
+        });
+
+        document.querySelectorAll(".sub-feature").forEach((section) => {
+          section.classList.toggle("collapsed", allCollapsed);
+        });
+      }
+
+      // ============================================================================
+      // INITIALIZATION
+      // ============================================================================
+      document.addEventListener("DOMContentLoaded", function () {
+        // Render features
+        renderFeatures();
+
+        // Update progress
+        updateProgress();
+
+        // Filter buttons
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", function () {
+            applyFilter(this.dataset.filter);
+          });
+        });
+
+        // Search
+        document
+          .getElementById("search-input")
+          .addEventListener("input", function () {
+            applySearch(this.value);
+          });
+
+        // Reset button
+        document
+          .getElementById("reset-btn")
+          .addEventListener("click", resetAllTasks);
+
+        // Export button
+        document
+          .getElementById("export-btn")
+          .addEventListener("click", exportProgress);
+
+        // Collapse all button
+        document
+          .getElementById("collapse-all")
+          .addEventListener("click", toggleCollapseAll);
+      });
+    </script>
+  </body>
+</html>
